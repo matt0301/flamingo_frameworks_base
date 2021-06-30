@@ -95,4 +95,7 @@
     <!-- Sysfs node that exposes fast charge status on supported devices -->
     <string name="config_fastChargeSysfsNode" />
 
+    <!-- Whether device supports increased touch sensitvity -->
+    <bool name="config_supportGloveMode">false</bool>
+
 </resources>

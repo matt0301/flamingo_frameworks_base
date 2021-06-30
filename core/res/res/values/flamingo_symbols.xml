@@ -102,4 +102,6 @@
     <!-- Sysfs node that exposes fast charge status on supported devices -->
     <java-symbol type="string" name="config_fastChargeSysfsNode" />
 
+    <java-symbol type="bool" name="config_supportGloveMode" />
+
 </resources>
