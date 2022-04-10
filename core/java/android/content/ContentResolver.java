@@ -2191,8 +2191,8 @@ public abstract class ContentResolver implements ContentInterface {
             @Nullable ContentValues values, @Nullable Bundle extras) {
         android.util.SeempLog.record_uri(37, url);
         Objects.requireNonNull(url, "url");
-        if (GmsCompat.isPlayStore()) {
-            PlayStoreHooks.filterContentValues(url, values);
+        if (GmsCompat.isEnabled()) {
+            GmsHooks.filterContentValues(url, values);
         }
 
         try {
