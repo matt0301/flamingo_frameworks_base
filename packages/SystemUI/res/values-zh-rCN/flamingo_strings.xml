@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2022 FlamingoOS Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <!-- AlertSlider -->
+    <string name="alert_slider_mode_priority_text">仅优先</string>
+    <string name="alert_slider_mode_dnd_text">勿扰</string>
+
+    <!-- Reader mode QS tile -->
+    <string name="quick_settings_reading_mode">阅读模式</string>
+    <string name="accessibility_quick_settings_reading_mode_on">阅读模式开启</string>
+    <string name="accessibility_quick_settings_reading_mode_off">阅读模式关闭</string>
+    <string name="accessibility_quick_settings_reading_mode_changed_on">阅读模式已开启</string>
+    <string name="accessibility_quick_settings_reading_mode_changed_off">阅读模式已关闭</string>
+
+    <!-- Refresh Rate Tile -->
+    <string name="refresh_rate_tile_label">刷新率</string>
+    <string name="refresh_rate_auto_mode_placeholder">
+        自动 (<xliff:g id="min_refresh_rate" example="60">%1$d</xliff:g> - <xliff:g id="max_refresh_rate" example="60">%2$d</xliff:g> Hz)
+    </string>
+    <string name="refresh_rate_forced_mode_placeholder"><xliff:g id="refresh_rate" example="60">%1$d</xliff:g> Hz</string>
+
+    <!-- Label for UI element which allows deleting the screenshot [CHAR LIMIT=30] -->
+    <string name="screenshot_delete_label">删除</string>
+    <!-- Content description indicating that tapping the element will allow deleting the screenshot [CHAR LIMIT=NONE] -->
+    <string name="screenshot_delete_description">删除截图</string>
+
+    <!-- Caffeine QS Tile -->
+    <string name="quick_settings_caffeine_label">保持亮屏</string>
+    <string name="quick_settings_caffeine_label_off">关闭</string>
+    <string name="accessibility_quick_settings_caffeine_off">保持亮屏关闭</string>
+    <string name="accessibility_quick_settings_caffeine_on">保持亮屏开启</string>
+
+    <!-- Ambient display QS tile -->
+    <string name="quick_settings_ambient_display_label">环境显示</string>
+    <string name="accessibility_quick_settings_ambient_display_off">环境显示开启</string>
+    <string name="accessibility_quick_settings_ambient_display_on">环境显示关闭</string>
+    <string name="accessibility_quick_settings_ambient_display_changed_off">环境显示已关闭</string>
+    <string name="accessibility_quick_settings_ambient_display_changed_on">环境显示已开启</string>
+
+    <!-- Sync QS Tile -->
+    <string name="quick_settings_sync_label">同步</string>
+    <string name="accessibility_quick_settings_sync_off">同步关闭</string>
+    <string name="accessibility_quick_settings_sync_on">同步开启</string>
+    <string name="accessibility_quick_settings_sync_changed_off">同步已关闭</string>
+    <string name="accessibility_quick_settings_sync_changed_on">同步已开启</string>
+
+    <!-- Sound QS Tile -->
+    <string name="quick_settings_sound_label">声音</string>
+    <string name="quick_settings_sound_ring">响铃</string>
+    <string name="quick_settings_sound_vibrate">震动</string>
+    <string name="quick_settings_sound_dnd">勿扰</string>
+
+    <!-- Indication on the keyguard that is shown when the device is charging with a dash charger. Should match keyguard_plugged_in_dash_charging [CHAR LIMIT=40]-->
+    <string name="keyguard_indication_dash_charging_time" formatted="false"><xliff:g id="percentage">%2$s</xliff:g> • Dash 闪充中 (还需 <xliff:g id="charging_time_left" example="4 hours and 2 minutes">%s</xliff:g> 充满)</string>
+    <string name="keyguard_plugged_in_dash_charging">Dash 闪充中</string>
+
+    <!-- Anti flicker QS tile -->
+    <string name="quick_settings_anti_flicker">防闪烁</string>
+
+    <!-- AOD QS tile -->
+    <string name="quick_settings_aod_label">充电环境显示</string>
+    <string name="quick_settings_aod_on_charge_label">充电显示环境显示</string>
+    <string name="quick_settings_aod_off_label">关闭环境显示</string>
+    <string name="quick_settings_aod_off_powersave_label">环境显示 关闭\n省电模式</string>
+
+    <!-- DataSwitch Tile -->
+    <string name="qs_data_switch_label">切换数据卡</string>
+    <string name="qs_data_switch_toast_0">当前未插入 SIM 卡</string>
+    <string name="qs_data_switch_toast_1">当前只插入了一张 SIM 卡</string>
+    <string name="qs_data_switch_changed_1">将数据卡切换到 SIM 1</string>
+    <string name="qs_data_switch_changed_2">将数据卡切换到 SIM 2</string>
+
+    <!-- Screen record -->
+    <!-- Label for notification action to delete a screen recording file [CHAR LIMIT=35] -->
+    <string name="screenrecord_delete_label">删除</string>
+    <!-- A toast message shown after successfully deleting a screen recording [CHAR LIMIT=NONE] -->
+    <string name="screenrecord_delete_description">屏幕录制已删除</string>
+    <string name="screenrecord_stopdot_label">显示停止按钮\n长按来移动它</string>
+    <string name="screenrecord_lowquality_label">降低质量以减少文件大小</string>
+    <string name="screenrecord_longer_timeout_switch_label">超大文件录制\n最大：15GiB</string>
+
+    <!-- FPS Info tile -->
+    <string name="quick_settings_fpsinfo_label">FPS 信息</string>
+    <string name="accessibility_quick_settings_fpsinfo_off">FPS 信息关闭</string>
+    <string name="accessibility_quick_settings_fpsinfo_on">FPS 信息开启</string>
+
+    <!-- FPS view text placeholder -->
+    <string name="fps_text_placeholder">FPS: <xliff:g id="fps" example="90">%1$d</xliff:g></string>
+
+    <!-- HeadsUp Tile -->
+    <string name="quick_settings_headsup_label">浮动通知</string>
+    <string name="accessibility_quick_settings_headsup_enabled">浮动通知已开启</string>
+    <string name="accessibility_quick_settings_headsup_disabled">浮动通知已关闭</string>
+
+    <!-- Advanced Reboot -->
+    <string name="global_action_restart_advanced">高级选项</string>
+    <string name="global_action_restart_recovery">恢复模式</string>
+    <string name="global_action_restart_bootloader">引导模式</string>
+    <string name="global_action_restart_ui">系统界面</string>
+
+    <!-- Title of statusbar tuner -->
+    <string name="status_bar_icons">状态栏图标</string>
+
+    <!-- Name of the roaming status bar icon. -->
+    <string name="status_bar_roaming">漫游指示器</string>
+
+    <!-- WiFi standard numbering on statusbar -->
+    <string name="status_bar_wifi_standard">Wi-Fi 频段</string>
+
+    <!-- Name of the nfc status bar icon. -->
+    <string name="status_bar_nfc">NFC</string>
+
+    <!-- Accessibility label for nfc icon (not shown on screen) [CHAR LIMIT=NONE] -->
+    <string name="accessibility_status_bar_nfc">Nfc</string>
+</resources>
