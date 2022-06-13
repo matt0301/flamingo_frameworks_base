@@ -92,4 +92,7 @@
     <!-- Whether to show WiFi/Hotspot standard -->
     <bool name="config_show_network_standard">false</bool>
 
+    <!-- Sysfs node that exposes fast charge status on supported devices -->
+    <string name="config_fastChargeSysfsNode" />
+
 </resources>

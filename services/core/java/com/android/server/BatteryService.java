@@ -17,6 +17,7 @@
 package com.android.server;
 
 import static com.android.internal.logging.nano.MetricsProto.MetricsEvent;
+import static com.android.internal.util.flamingo.FileUtils.readOneLine;
 
 import android.annotation.Nullable;
 import android.app.ActivityManager;
@@ -74,12 +75,9 @@ import com.android.server.am.BatteryStatsService;
 import com.android.server.lights.LightsManager;
 import com.android.server.lights.LogicalLight;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayDeque;
@@ -180,6 +178,7 @@ public final class BatteryService extends SystemService {
 
     private boolean mBatteryLevelLow;
 
+    private final String mFastChargeNode;
     private boolean mDashCharger;
     private boolean mLastDashCharger;
 
@@ -245,6 +244,7 @@ public final class BatteryService extends SystemService {
         }
 
         mBatteryInputSuspended = PowerProperties.battery_input_suspended().orElse(false);
+        mFastChargeNode = mContext.getString(com.android.internal.R.string.config_fastChargeSysfsNode);
     }
 
     @Override
@@ -791,17 +791,7 @@ public final class BatteryService extends SystemService {
     }
 
     private boolean isDashCharger() {
-        try {
-            FileReader file = new FileReader("/sys/class/power_supply/battery/fastchg_status");
-            BufferedReader br = new BufferedReader(file);
-            String state = br.readLine();
-            br.close();
-            file.close();
-            return "1".equals(state);
-        } catch (FileNotFoundException e) {
-        } catch (IOException e) {
-        }
-        return false;
+        return !mFastChargeNode.isEmpty() && "1".equals(readOneLine(mFastChargeNode));
     }
 
     // TODO: Current code doesn't work since "--unplugged" flag in BSS was purposefully removed.

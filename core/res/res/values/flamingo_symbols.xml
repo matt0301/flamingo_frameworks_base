@@ -98,4 +98,8 @@
 
     <!-- Whether to show WiFi/Hotspot standard -->
     <java-symbol type="bool" name="config_show_network_standard" />
+
+    <!-- Sysfs node that exposes fast charge status on supported devices -->
+    <java-symbol type="string" name="config_fastChargeSysfsNode" />
+
 </resources>
