@@ -75,6 +75,7 @@ import com.android.systemui.statusbar.notification.logging.NotificationLogger;
 import com.android.systemui.statusbar.notification.row.ExpandableNotificationRow;
 import com.android.systemui.statusbar.notification.row.ExpandableNotificationRowDragController;
 import com.android.systemui.statusbar.notification.row.OnUserInteractionCallback;
+import com.android.systemui.statusbar.phone.GameSpaceServiceDelegate;
 import com.android.systemui.statusbar.policy.HeadsUpUtil;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.wmshell.BubblesManager;
@@ -117,6 +118,7 @@ public class StatusBarNotificationActivityStarter implements NotificationActivit
     private final LockPatternUtils mLockPatternUtils;
     private final StatusBarRemoteInputCallback mStatusBarRemoteInputCallback;
     private final ActivityIntentHelper mActivityIntentHelper;
+    private final GameSpaceServiceDelegate mGameSpaceServiceDelegate;
 
     private final FeatureFlags mFeatureFlags;
     private final MetricsLogger mMetricsLogger;
@@ -156,6 +158,7 @@ public class StatusBarNotificationActivityStarter implements NotificationActivit
             LockPatternUtils lockPatternUtils,
             StatusBarRemoteInputCallback remoteInputCallback,
             ActivityIntentHelper activityIntentHelper,
+            GameSpaceServiceDelegate gameSpaceServiceDelegate,
 
             FeatureFlags featureFlags,
             MetricsLogger metricsLogger,
@@ -191,6 +194,7 @@ public class StatusBarNotificationActivityStarter implements NotificationActivit
         mLockPatternUtils = lockPatternUtils;
         mStatusBarRemoteInputCallback = remoteInputCallback;
         mActivityIntentHelper = activityIntentHelper;
+        mGameSpaceServiceDelegate = gameSpaceServiceDelegate;
 
         mFeatureFlags = featureFlags;
         mMetricsLogger = metricsLogger;
@@ -656,7 +660,8 @@ public class StatusBarNotificationActivityStarter implements NotificationActivit
     }
 
     private boolean shouldSuppressFullScreenIntent(NotificationEntry entry) {
-        if (mPresenter.isDeviceInVrMode()) {
+        if (mPresenter.isDeviceInVrMode() ||
+                !mGameSpaceServiceDelegate.allowLaunchingFullScreenIntent()) {
             return true;
         }
 
@@ -703,6 +708,7 @@ public class StatusBarNotificationActivityStarter implements NotificationActivit
         private final LockPatternUtils mLockPatternUtils;
         private final StatusBarRemoteInputCallback mRemoteInputCallback;
         private final ActivityIntentHelper mActivityIntentHelper;
+        private final GameSpaceServiceDelegate mGameSpaceServiceDelegate;
 
         private final FeatureFlags mFeatureFlags;
         private final MetricsLogger mMetricsLogger;
@@ -741,6 +747,7 @@ public class StatusBarNotificationActivityStarter implements NotificationActivit
                 LockPatternUtils lockPatternUtils,
                 StatusBarRemoteInputCallback remoteInputCallback,
                 ActivityIntentHelper activityIntentHelper,
+                GameSpaceServiceDelegate gameSpaceServiceDelegate,
 
                 FeatureFlags featureFlags,
                 MetricsLogger metricsLogger,
@@ -771,6 +778,7 @@ public class StatusBarNotificationActivityStarter implements NotificationActivit
             mLockPatternUtils = lockPatternUtils;
             mRemoteInputCallback = remoteInputCallback;
             mActivityIntentHelper = activityIntentHelper;
+            mGameSpaceServiceDelegate = gameSpaceServiceDelegate;
 
             mFeatureFlags = featureFlags;
             mMetricsLogger = metricsLogger;
@@ -835,6 +843,7 @@ public class StatusBarNotificationActivityStarter implements NotificationActivit
                     mLockPatternUtils,
                     mRemoteInputCallback,
                     mActivityIntentHelper,
+                    mGameSpaceServiceDelegate,
                     mFeatureFlags,
                     mMetricsLogger,
                     mLogger,

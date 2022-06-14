@@ -43,4 +43,7 @@
 
     <!-- Allow devices override audio panel location to the left side -->
     <bool name="config_audioPanelOnLeftSide">false</bool>
+
+    <!-- GameSpace service component that will be bound with SystemUI for game mode -->
+    <string name="config_gameSpaceServiceComponent" />
 </resources>

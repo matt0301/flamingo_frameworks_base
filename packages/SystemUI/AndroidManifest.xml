@@ -319,6 +319,11 @@
     <protected-broadcast android:name="com.google.android.systemui.smartspace.ENABLE_UPDATE"/>
     <protected-broadcast android:name="com.google.android.systemui.smartspace.EXPIRE_EVENT"/>
 
+    <permission
+        android:name="com.flamingo.permission.MANAGE_GAMESPACE"
+        android:protectionLevel="signature|privileged" />
+    <uses-permission android:name="com.flamingo.permission.MANAGE_GAMESPACE" />
+
     <application
         android:name=".SystemUIApplication"
         android:persistent="true"
