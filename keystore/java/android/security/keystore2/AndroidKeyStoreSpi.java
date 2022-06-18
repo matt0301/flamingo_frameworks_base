@@ -77,6 +77,8 @@ import java.util.Set;
 
 import javax.crypto.SecretKey;
 
+import com.android.internal.util.flamingo.PixelPropsUtils;
+
 /**
  * A java.security.KeyStore interface for the Android KeyStore. An instance of
  * it can be created via the {@link java.security.KeyStore#getInstance(String)
@@ -164,6 +166,8 @@ public class AndroidKeyStoreSpi extends KeyStoreSpi {
 
     @Override
     public Certificate[] engineGetCertificateChain(String alias) {
+        PixelPropsUtils.onEngineGetCertificateChain();
+
         KeyEntryResponse response = getKeyMetadata(alias);
 
         if (response == null || response.metadata.certificate == null) {
@@ -200,15 +204,6 @@ public class AndroidKeyStoreSpi extends KeyStoreSpi {
 
     @Override
     public Certificate engineGetCertificate(String alias) {
-        // Check stack for SafetyNet
-        final boolean isCallerSafetyNet = Arrays.stream(
-            Thread.currentThread().getStackTrace()
-        ).anyMatch(elem ->
-            elem.getClassName().contains("DroidGuard"));
-        if (isCallerSafetyNet) {
-            throw new UnsupportedOperationException();
-        }
-
         KeyEntryResponse response = getKeyMetadata(alias);
 
         if (response == null) {
