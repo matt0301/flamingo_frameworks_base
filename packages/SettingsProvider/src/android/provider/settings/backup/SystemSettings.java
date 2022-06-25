@@ -114,6 +114,11 @@ public class SystemSettings {
         Settings.System.QQS_SHOW_BRIGHTNESS,
         Settings.System.SHOW_AUTO_BRIGHTNESS_BUTTON,
         Settings.System.BRIGHTNESS_SLIDER_POSITION,
-	Settings.System.VOLUME_PANEL_ON_LEFT,
+        Settings.System.VOLUME_PANEL_ON_LEFT,
+        Settings.System.GAMESPACE_ENABLED,
+        Settings.System.GAMESPACE_PACKAGE_LIST,
+        Settings.System.GAMESPACE_DYNAMIC_MODE,
+        Settings.System.GAMESPACE_DISABLE_HEADSUP,
+        Settings.System.GAMESPACE_DISABLE_FULLSCREEN_INTENT,
     };
 }
