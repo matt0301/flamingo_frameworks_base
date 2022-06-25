@@ -242,7 +242,6 @@ import com.android.internal.protolog.common.ProtoLog;
 import com.android.internal.util.ArrayUtils;
 import com.android.internal.util.FastPrintWriter;
 import com.android.internal.util.FrameworkStatsLog;
-import com.android.internal.util.GamingModeHelper;
 import com.android.internal.util.function.pooled.PooledLambda;
 import com.android.server.LocalServices;
 import com.android.server.SystemService;
@@ -778,8 +777,6 @@ public class ActivityTaskManagerService extends IActivityTaskManager.Stub {
 
     private int mDeviceOwnerUid = Process.INVALID_UID;
 
-    public GamingModeHelper mGamingModeHelper;
-
     private final class SettingObserver extends ContentObserver {
         private final Uri mFontScaleUri = Settings.System.getUriFor(FONT_SCALE);
         private final Uri mHideErrorDialogsUri = Settings.Global.getUriFor(HIDE_ERROR_DIALOGS);
@@ -875,19 +872,6 @@ public class ActivityTaskManagerService extends IActivityTaskManager.Stub {
 
     public void installSystemProviders() {
         mSettingsObserver = new SettingObserver();
-        registerTaskStackListener(new TaskStackListener() {
-            @Override
-            public void onTaskFocusChanged(int taskId, boolean focused)  {
-                if (mGamingModeHelper == null || mRootWindowContainer == null) return;
-                final Task task = mRootWindowContainer.anyTaskForId(taskId);
-                if (task == null) return;
-                final Task rootTask = task.getRootTask();
-                if (rootTask != null && !rootTask.inPinnedWindowingMode() &&
-                        !rootTask.inFreeformWindowingMode() && rootTask.realActivity != null) {
-                    mGamingModeHelper.onTopAppChanged(rootTask.realActivity.getPackageName(), focused);
-                }
-            }
-        });
     }
 
     public void retrieveSettings(ContentResolver resolver) {
@@ -5761,7 +5745,6 @@ public class ActivityTaskManagerService extends IActivityTaskManager.Stub {
                 mAppWarnings.onPackageUninstalled(name);
                 mCompatModePackages.handlePackageUninstalledLocked(name);
                 mPackageConfigPersister.onPackageUninstall(name);
-                mGamingModeHelper.onPackageUninstalled(name);
             }
         }
 

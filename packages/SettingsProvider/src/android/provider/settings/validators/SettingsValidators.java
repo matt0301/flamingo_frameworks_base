@@ -257,20 +257,6 @@ public class SettingsValidators {
         }
     };
 
-    static final Validator GAMING_MODE_PACKAGE_LIST_VALIDATOR = new Validator() {
-        @Override
-        public boolean validate(@Nullable String value) {
-            if (value == null || value.isEmpty()) return true;
-            final String[] items = value.split(";");
-            for (String item : items) {
-                if (!PACKAGE_NAME_VALIDATOR.validate(item)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    };
-
     static final Validator APP_LIST_VALIDATOR = new ListValidator(";") {
         @Override
         protected boolean isEntryValid(String entry) {
