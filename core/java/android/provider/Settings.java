@@ -5633,6 +5633,14 @@ public final class Settings {
         public static final String GAMESPACE_DISABLE_FULLSCREEN_INTENT = "gamespace_disable_fullscreen_intent";
 
         /**
+         * Whether call ringing should be disabled in game mode.
+         * Default 1.
+         * @hide
+         */
+        @Readable
+        public static final String GAMESPACE_DISABLE_CALL_RINGING = "gamespace_disable_call_ringing";
+
+        /**
          * IMPORTANT: If you add a new public settings you also have to add it to
          * PUBLIC_SETTINGS below. If the new setting is hidden you have to add
          * it to PRIVATE_SETTINGS below. Also add a validator that can validate

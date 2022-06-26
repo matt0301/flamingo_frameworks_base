@@ -35,6 +35,8 @@ import android.os.IBinder
 import android.os.RemoteException
 import android.os.UserHandle
 import android.provider.Settings
+import android.telephony.TelephonyCallback.CallStateListener
+import android.telephony.TelephonyManager
 import android.util.Log
 
 import androidx.lifecycle.Observer
@@ -51,6 +53,7 @@ import com.android.systemui.keyguard.ScreenLifecycle
 import com.android.systemui.statusbar.notification.collection.NotificationEntry
 import com.android.systemui.statusbar.notification.interruption.NotificationInterruptStateProvider
 import com.android.systemui.statusbar.notification.interruption.NotificationInterruptSuppressor
+import com.android.systemui.telephony.TelephonyListenerManager
 import com.android.systemui.util.RingerModeTracker
 import com.android.systemui.util.settings.SystemSettings
 
@@ -59,6 +62,8 @@ import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -74,6 +79,7 @@ class GameSpaceServiceDelegate @Inject constructor(
     private val keyguardUpdateMonitor: KeyguardUpdateMonitor,
     private val iStatusBarService: IStatusBarService,
     private val ringerModeTracker: RingerModeTracker,
+    private val telephonyListenerManager: TelephonyListenerManager,
     context: Context
 ) : SystemUI(context) {
 
@@ -84,15 +90,14 @@ class GameSpaceServiceDelegate @Inject constructor(
             coroutineScope.launch(Dispatchers.IO) {
                 when (val key = uri?.lastPathSegment) {
                     Settings.System.GAMESPACE_ENABLED -> {
-                        val enabled = getBoolSetting(key, DEFAULT_GAMESPACE_ENABLED)
                         stateMutex.withLock {
-                            gameSpaceEnabled = enabled
-                        }
-                        if (enabled) {
-                            registerTaskStackListenerLocked()
-                        } else {
-                            unregisterTaskStackListenerLocked()
-                            disableGameMode()
+                            gameSpaceEnabled = getBoolSetting(key, DEFAULT_GAMESPACE_ENABLED)
+                            if (gameSpaceEnabled) {
+                                registerTaskStackListenerLocked()
+                            } else {
+                                unregisterTaskStackListenerLocked()
+                                disableGameMode()
+                            }
                         }
                     }
                     Settings.System.GAMESPACE_PACKAGE_LIST -> {
@@ -119,6 +124,11 @@ class GameSpaceServiceDelegate @Inject constructor(
                             disableFullscreenIntent = getBoolSetting(key, DEFAULT_GAMESPACE_DISABLE_FULLSCREEN_INTENT)
                         }
                     }
+                    Settings.System.GAMESPACE_DISABLE_CALL_RINGING -> {
+                        stateMutex.withLock {
+                            disableCallRinging = getBoolSetting(key, DEFAULT_GAMESPACE_DISABLE_CALL_RINGING)
+                        }
+                    }
                 }
             }
         }
@@ -140,6 +150,9 @@ class GameSpaceServiceDelegate @Inject constructor(
 
     @GuardedBy("stateMutex")
     private var disableFullscreenIntent = DEFAULT_GAMESPACE_DISABLE_FULLSCREEN_INTENT
+
+    @GuardedBy("stateMutex")
+    private var disableCallRinging = DEFAULT_GAMESPACE_DISABLE_CALL_RINGING
 
     @GuardedBy("stateMutex")
     private var taskStackListenerRegistered = false
@@ -392,6 +405,16 @@ class GameSpaceServiceDelegate @Inject constructor(
         }
     }
 
+    private val callStateChannel = Channel<Int>(capacity = Channel.CONFLATED)
+    private val callstateListener = CallStateListener {
+        coroutineScope.launch {
+            callStateChannel.send(it)
+        }
+    }
+    private var callStateListeningJob: Job? = null
+    @GuardedBy("stateMutex")
+    private var previousVolume = audioManager.getStreamVolume(AudioManager.STREAM_RING)
+
     override fun start() {
         logD("start")
         val serviceComponentString = mContext.getString(R.string.config_gameSpaceServiceComponent)
@@ -417,9 +440,10 @@ class GameSpaceServiceDelegate @Inject constructor(
 
         coroutineScope.launch(Dispatchers.IO) {
             loadSettingsLocked()
-            val enabled = stateMutex.withLock { gameSpaceEnabled }
-            if (enabled) {
-                registerTaskStackListenerLocked()
+            stateMutex.withLock {
+                if (gameSpaceEnabled) {
+                    registerTaskStackListenerLocked()
+                }
             }
         }
         notificationInterruptStateProvider.addSuppressor(notificationInterruptSuppressor)
@@ -442,6 +466,10 @@ class GameSpaceServiceDelegate @Inject constructor(
                 Settings.System.GAMESPACE_DISABLE_FULLSCREEN_INTENT,
                 DEFAULT_GAMESPACE_DISABLE_FULLSCREEN_INTENT
             )
+            disableCallRinging = getBoolSetting(
+                Settings.System.GAMESPACE_DISABLE_CALL_RINGING,
+                DEFAULT_GAMESPACE_DISABLE_CALL_RINGING
+            )
         }
     }
 
@@ -460,13 +488,10 @@ class GameSpaceServiceDelegate @Inject constructor(
     }
 
     private suspend fun registerTaskStackListenerLocked() {
-        val registered = stateMutex.withLock { taskStackListenerRegistered }
-        if (registered) return
+        if (taskStackListenerRegistered) return
         try {
             ActivityTaskManager.getService().registerTaskStackListener(taskStackListener)
-            stateMutex.withLock {
-                taskStackListenerRegistered = true
-            }
+            taskStackListenerRegistered = true
         } catch(e: RemoteException) {
             Log.e(TAG, "Failed to register task stack listener", e)
             return
@@ -479,13 +504,10 @@ class GameSpaceServiceDelegate @Inject constructor(
     }
 
     private suspend fun unregisterTaskStackListenerLocked() {
-        val registered = stateMutex.withLock { taskStackListenerRegistered }
-        if (!registered) return
+        if (!taskStackListenerRegistered) return
         try {
             ActivityTaskManager.getService().unregisterTaskStackListener(taskStackListener)
-            stateMutex.withLock {
-                taskStackListenerRegistered = false
-            }
+            taskStackListenerRegistered = false
         } catch(e: RemoteException) {
             Log.e(TAG, "Failed to unregister task stack listener", e)
         } finally {
@@ -599,6 +621,7 @@ class GameSpaceServiceDelegate @Inject constructor(
                     ringerModeObserverRegistered = true
                 }
             }
+            registerCallStateChangeListener()
             gameModeEnabled = bound
         }
     }
@@ -613,6 +636,27 @@ class GameSpaceServiceDelegate @Inject constructor(
         return aInfo.category == ApplicationInfo.CATEGORY_GAME
     }
 
+    private suspend fun registerCallStateChangeListener() {
+        if (callStateListeningJob?.isActive == true) return
+        telephonyListenerManager.addCallStateListener(callstateListener)
+        callStateListeningJob = coroutineScope.launch {
+            for (state in callStateChannel) {
+                stateMutex.withLock {
+                    audioManager.setStreamVolume(
+                        AudioManager.STREAM_RING,
+                        if (state == TelephonyManager.CALL_STATE_RINGING && disableCallRinging) {
+                            previousVolume = audioManager.getStreamVolume(AudioManager.STREAM_RING)
+                            0
+                        } else {
+                            previousVolume
+                        },
+                        0 /* flags */
+                    )
+                }
+            }
+        }
+    }
+
     private suspend fun disableGameMode() {
         logD("disableGameMode")
         stateMutex.withLock {
@@ -625,6 +669,7 @@ class GameSpaceServiceDelegate @Inject constructor(
         logD("Disabling game mode")
         // We don't want anymore stop broadcasts, yeet.
         mContext.unregisterReceiver(broadcastReceiver)
+        unregisterCallStateChangeListener()
         // Remove this observer first so as to not notify changes
         // after service is unbound.
         withContext(Dispatchers.Main) {
@@ -652,6 +697,12 @@ class GameSpaceServiceDelegate @Inject constructor(
             brightnessModeChanged = false
         }
         gameModeEnabled = false
+    }
+
+    private suspend fun unregisterCallStateChangeListener() {
+        if (callStateListeningJob?.isActive != true) return
+        telephonyListenerManager.removeCallStateListener(callstateListener)
+        callStateListeningJob?.cancelAndJoin()
     }
 
     private fun setBrightnessMode(mode: Int) {
