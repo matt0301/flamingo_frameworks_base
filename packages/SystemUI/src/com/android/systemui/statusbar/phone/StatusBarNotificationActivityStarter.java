@@ -661,7 +661,7 @@ public class StatusBarNotificationActivityStarter implements NotificationActivit
 
     private boolean shouldSuppressFullScreenIntent(NotificationEntry entry) {
         if (mPresenter.isDeviceInVrMode() ||
-                !mGameSpaceServiceDelegate.allowLaunchingFullScreenIntent()) {
+                mGameSpaceServiceDelegate.disallowLaunchingFullScreenIntent()) {
             return true;
         }
 

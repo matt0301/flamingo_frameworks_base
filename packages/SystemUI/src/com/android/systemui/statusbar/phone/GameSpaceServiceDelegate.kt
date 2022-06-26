@@ -662,7 +662,7 @@ class GameSpaceServiceDelegate @Inject constructor(
         )
     }
 
-    fun allowLaunchingFullScreenIntent() =
+    fun disallowLaunchingFullScreenIntent() =
         runBlocking {
             stateMutex.withLock {
                 gameModeEnabled && disableFullscreenIntent
