@@ -86,10 +86,10 @@ class AlertSliderDialog @Inject constructor(
     }
 
     fun updateConfiguration(newConfig: Configuration) {
-        if (view.parent != null) {
-            radiusAnimator?.cancel()
-            transitionAnimator?.cancel()
-            appearAnimator?.cancel()
+        radiusAnimator?.cancel()
+        transitionAnimator?.cancel()
+        appearAnimator?.cancel()
+        if (view.isAttachedToWindow) {
             windowManager.removeViewImmediate(view)
         }
         isPortrait = newConfig.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -109,7 +109,7 @@ class AlertSliderDialog @Inject constructor(
         prevPosition = currPosition
         currPosition = position
         appearAnimator?.cancel()
-        if (view.parent == null) {
+        if (!view.isAttachedToWindow) {
             view.alpha = 0f
             windowManager.addView(view, layoutParams)
             // Only start the animations after view has been drawn
@@ -131,7 +131,7 @@ class AlertSliderDialog @Inject constructor(
 
     fun dismiss() {
         prevPosition = currPosition
-        if (view.parent != null) {
+        if (view.isAttachedToWindow) {
             animateAppear(false)
         }
     }
@@ -232,7 +232,9 @@ class AlertSliderDialog @Inject constructor(
             addListener(
                 onEnd = {
                     appearAnimator = null
-                    if (!appearing) windowManager.removeViewImmediate(view)
+                    if (!appearing && view.isAttachedToWindow) {
+                        windowManager.removeViewImmediate(view)
+                    }
                 },
                 onCancel = { appearAnimator = null },
             )
