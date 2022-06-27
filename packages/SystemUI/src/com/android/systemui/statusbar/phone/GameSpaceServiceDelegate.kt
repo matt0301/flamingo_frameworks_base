@@ -16,7 +16,7 @@
 
 package com.android.systemui.statusbar.phone
 
-import android.app.ActivityTaskManager
+import android.app.IActivityManager
 import android.app.TaskStackListener
 import android.app.WindowConfiguration
 import android.content.BroadcastReceiver
@@ -80,6 +80,7 @@ class GameSpaceServiceDelegate @Inject constructor(
     private val iStatusBarService: IStatusBarService,
     private val ringerModeTracker: RingerModeTracker,
     private val telephonyListenerManager: TelephonyListenerManager,
+    private val iActivityManager: IActivityManager,
     context: Context
 ) : SystemUI(context) {
 
@@ -490,7 +491,7 @@ class GameSpaceServiceDelegate @Inject constructor(
     private suspend fun registerTaskStackListenerLocked() {
         if (taskStackListenerRegistered) return
         try {
-            ActivityTaskManager.getService().registerTaskStackListener(taskStackListener)
+            iActivityManager.registerTaskStackListener(taskStackListener)
             taskStackListenerRegistered = true
         } catch(e: RemoteException) {
             Log.e(TAG, "Failed to register task stack listener", e)
@@ -506,7 +507,7 @@ class GameSpaceServiceDelegate @Inject constructor(
     private suspend fun unregisterTaskStackListenerLocked() {
         if (!taskStackListenerRegistered) return
         try {
-            ActivityTaskManager.getService().unregisterTaskStackListener(taskStackListener)
+            iActivityManager.unregisterTaskStackListener(taskStackListener)
             taskStackListenerRegistered = false
         } catch(e: RemoteException) {
             Log.e(TAG, "Failed to unregister task stack listener", e)
@@ -519,7 +520,7 @@ class GameSpaceServiceDelegate @Inject constructor(
 
     private fun getTopApp(): String? {
         val focusedRootTask = try {
-            ActivityTaskManager.getService().focusedRootTaskInfo
+            iActivityManager.focusedRootTaskInfo
         } catch(e: RemoteException) {
             Log.e(TAG, "Failed to get focused root task info", e)
             null
