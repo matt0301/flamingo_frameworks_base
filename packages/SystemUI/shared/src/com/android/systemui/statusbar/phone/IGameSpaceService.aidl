@@ -23,9 +23,9 @@ import com.android.systemui.statusbar.phone.IGameSpaceServiceCallback;
 /**
  * @hide
  */
-interface IGameSpaceService {
-    oneway void showGameUI(in String packageName);
-    oneway void onGamePackageChanged(in String packageName);
-    oneway void setCallback(in IGameSpaceServiceCallback callback);
-    oneway void onStateChanged(in Bundle state);
+oneway interface IGameSpaceService {
+    void showGameUI(in String packageName);
+    void onGamePackageChanged(in String packageName);
+    void setCallback(in IGameSpaceServiceCallback callback);
+    void onStateChanged(in Bundle state);
 }

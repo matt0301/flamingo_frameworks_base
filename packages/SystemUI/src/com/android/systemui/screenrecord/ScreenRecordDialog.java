@@ -47,16 +47,16 @@ import java.util.List;
  * Dialog to select screen recording options
  */
 public class ScreenRecordDialog extends SystemUIDialog {
-    private static final List<ScreenRecordingAudioSource> MODES = Arrays.asList(INTERNAL, MIC,
+    public static final List<ScreenRecordingAudioSource> MODES = Arrays.asList(INTERNAL, MIC,
             MIC_AND_INTERNAL);
     private static final long DELAY_MS = 3000;
     private static final long INTERVAL_MS = 1000;
-    private static final String PREFS = "screenrecord_";
-    private static final String PREF_DOT = "show_dot";
-    private static final String PREF_LOW = "use_low_quality";
-    private static final String PREF_LONGER = "use_longer_timeout";
-    private static final String PREF_AUDIO = "use_audio";
-    private static final String PREF_AUDIO_SOURCE = "audio_source";
+    public static final String PREFS = "screenrecord_";
+    public static final String PREF_DOT = "show_dot";
+    public static final String PREF_LOW = "use_low_quality";
+    public static final String PREF_LONGER = "use_longer_timeout";
+    public static final String PREF_AUDIO = "use_audio";
+    public static final String PREF_AUDIO_SOURCE = "audio_source";
 
     private final RecordingController mController;
     private final UserContextProvider mUserContextProvider;

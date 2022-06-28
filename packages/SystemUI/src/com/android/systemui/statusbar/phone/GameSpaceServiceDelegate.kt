@@ -16,7 +16,9 @@
 
 package com.android.systemui.statusbar.phone
 
+import android.app.Activity
 import android.app.IActivityManager
+import android.app.PendingIntent
 import android.app.TaskStackListener
 import android.app.WindowConfiguration
 import android.content.BroadcastReceiver
@@ -45,11 +47,24 @@ import com.android.internal.annotations.GuardedBy
 import com.android.internal.statusbar.IStatusBarService
 import com.android.keyguard.KeyguardUpdateMonitor
 import com.android.keyguard.KeyguardUpdateMonitorCallback
+import com.android.systemui.Prefs
 import com.android.systemui.R
 import com.android.systemui.SystemUI
 import com.android.systemui.dagger.SysUISingleton
 import com.android.systemui.dagger.qualifiers.Background
 import com.android.systemui.keyguard.ScreenLifecycle
+import com.android.systemui.screenrecord.RecordingController
+import com.android.systemui.screenrecord.RecordingController.RecordingStateChangeCallback
+import com.android.systemui.screenrecord.RecordingService
+import com.android.systemui.screenrecord.ScreenRecordingAudioSource
+import com.android.systemui.screenrecord.ScreenRecordDialog.MODES
+import com.android.systemui.screenrecord.ScreenRecordDialog.PREFS
+import com.android.systemui.screenrecord.ScreenRecordDialog.PREF_AUDIO
+import com.android.systemui.screenrecord.ScreenRecordDialog.PREF_AUDIO_SOURCE
+import com.android.systemui.screenrecord.ScreenRecordDialog.PREF_DOT
+import com.android.systemui.screenrecord.ScreenRecordDialog.PREF_LONGER
+import com.android.systemui.screenrecord.ScreenRecordDialog.PREF_LOW
+import com.android.systemui.settings.UserContextProvider
 import com.android.systemui.statusbar.notification.collection.NotificationEntry
 import com.android.systemui.statusbar.notification.interruption.NotificationInterruptStateProvider
 import com.android.systemui.statusbar.notification.interruption.NotificationInterruptSuppressor
@@ -81,6 +96,8 @@ class GameSpaceServiceDelegate @Inject constructor(
     private val ringerModeTracker: RingerModeTracker,
     private val telephonyListenerManager: TelephonyListenerManager,
     private val iActivityManager: IActivityManager,
+    private val recordingController: RecordingController,
+    private val userContextProvider: UserContextProvider,
     context: Context
 ) : SystemUI(context) {
 
@@ -260,6 +277,60 @@ class GameSpaceServiceDelegate @Inject constructor(
                 }
             }
         }
+
+        override fun startScreenRecording() {
+            if (recordingController.isRecording || recordingController.isStarting) return
+            coroutineScope.launch(Dispatchers.IO) {
+                val userContext = userContextProvider.userContext
+
+                val showStopDot = Prefs.getInt(userContext, PREFS + PREF_DOT, 0) == 1
+                val longerDuration = Prefs.getInt(userContext, PREFS + PREF_LONGER, 0) == 1
+                val hasAudioSource = Prefs.getInt(userContext, PREFS + PREF_AUDIO, 0) == 1
+                val audioSource = if (hasAudioSource) {
+                    val index = Prefs.getInt(userContext, PREFS + PREF_AUDIO_SOURCE, 0)
+                    MODES[index]
+                } else {
+                    ScreenRecordingAudioSource.NONE
+                }
+                val lowQuality = Prefs.getInt(userContext, PREFS + PREF_LOW, 0) == 1
+
+                val startIntent = PendingIntent.getForegroundService(userContext,
+                    RecordingService.REQUEST_CODE,
+                    RecordingService.getStartIntent(
+                        userContext,
+                        Activity.RESULT_OK,
+                        audioSource.ordinal,
+                        showStopDot,
+                        lowQuality,
+                        longerDuration
+                    ),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+                val stopIntent = PendingIntent.getService(
+                    userContext,
+                    RecordingService.REQUEST_CODE,
+                    RecordingService.getStopIntent(userContext),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+
+                withContext(Dispatchers.Main) {
+                    recordingController.startCountdown(
+                        1000, /* delay */
+                        500, /* interval */
+                        startIntent,
+                        stopIntent
+                    )
+                }
+            }
+        }
+
+        override fun stopScreenRecording() {
+            if (recordingController.isStarting) {
+                recordingController.cancelCountdown()
+            } else if (recordingController.isRecording) {
+                recordingController.stopRecording()
+            }
+        }
     }
 
     private var iGameSpaceService: IGameSpaceService? = null
@@ -415,6 +486,39 @@ class GameSpaceServiceDelegate @Inject constructor(
     private var callStateListeningJob: Job? = null
     @GuardedBy("stateMutex")
     private var previousVolume = audioManager.getStreamVolume(AudioManager.STREAM_RING)
+
+    private val recordingCallback = object : RecordingStateChangeCallback {
+
+        override fun onCountdown(millisUntilFinished: Long) {
+            coroutineScope.launch(Dispatchers.Default) {
+                val configCopy = stateMutex.withLock {
+                    gameSpaceConfig.putBoolean(CONFIG_SCREEN_RECORD, true)
+                    gameSpaceConfig.deepCopy()
+                }
+                try {
+                    iGameSpaceService?.onStateChanged(configCopy) ?:
+                        Log.wtf(TAG, "Service binder is null, failed to notify screen record state change")
+                } catch(e: RemoteException) {
+                    Log.e(TAG, "Failed to notify screen record state change", e)
+                }
+            }
+        }
+
+        override fun onRecordingEnd() {
+            coroutineScope.launch(Dispatchers.Default) {
+                val configCopy = stateMutex.withLock {
+                    gameSpaceConfig.putBoolean(CONFIG_SCREEN_RECORD, false)
+                    gameSpaceConfig.deepCopy()
+                }
+                try {
+                    iGameSpaceService?.onStateChanged(configCopy) ?:
+                        Log.wtf(TAG, "Service binder is null, failed to notify screen record state change")
+                } catch(e: RemoteException) {
+                    Log.e(TAG, "Failed to notify screen record state change", e)
+                }
+            }
+        }
+    }
 
     override fun start() {
         logD("start")
@@ -621,6 +725,7 @@ class GameSpaceServiceDelegate @Inject constructor(
                     ringerModeTracker.ringerModeInternal.observeForever(ringerModeObserver)
                     ringerModeObserverRegistered = true
                 }
+                recordingController.addCallback(recordingCallback)
             }
             registerCallStateChangeListener()
             gameModeEnabled = bound
@@ -692,6 +797,8 @@ class GameSpaceServiceDelegate @Inject constructor(
                 audioManager.ringerModeInternal = previousRingerMode
                 ringerModeChanged = false
             }
+            recordingController.removeCallback(recordingCallback)
+            gameSpaceConfig.putBoolean(CONFIG_SCREEN_RECORD, false)
         }
         if (brightnessModeChanged) {
             setBrightnessMode(previousBrightnessMode)

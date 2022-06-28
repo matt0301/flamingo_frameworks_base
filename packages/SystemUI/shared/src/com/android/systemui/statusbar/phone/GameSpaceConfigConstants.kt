@@ -26,3 +26,4 @@ const val DEFAULT_GAMESPACE_DISABLE_CALL_RINGING = true
 // State config keys
 const val CONFIG_BACK_GESTURE_LOCKED = "back_gesture_locked"
 const val CONFIG_RINGER_MODE = "ringer_mode"
+const val CONFIG_SCREEN_RECORD = "screen_record"
