@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package com.android.systemui.statusbar.phone;
+package com.android.systemui.game
 
-/**
- * @hide
- */
-oneway interface IGameSpaceServiceCallback {
-    void setGesturalNavigationLocked(in boolean isLocked);
-    void setRingerMode(in int mode);
-    void setAdaptiveBrightnessDisabled(in boolean disabled);
-    void startScreenRecording();
-    void stopScreenRecording();
-}
+// Setting defaults
+const val DEFAULT_GAMESPACE_ENABLED = false
+const val DEFAULT_GAMESPACE_DYNAMIC_MODE = true
+const val DEFAULT_GAMESPACE_DISABLE_HEADSUP = true
+const val DEFAULT_GAMESPACE_DISABLE_FULLSCREEN_INTENT = false
+const val DEFAULT_GAMESPACE_DISABLE_CALL_RINGING = true
+
+// State config keys
+const val CONFIG_BACK_GESTURE_LOCKED = "back_gesture_locked"
+const val CONFIG_RINGER_MODE = "ringer_mode"
+const val CONFIG_SCREEN_RECORD = "screen_record"

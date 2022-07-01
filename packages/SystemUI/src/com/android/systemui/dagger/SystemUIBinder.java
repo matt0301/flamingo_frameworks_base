@@ -35,7 +35,7 @@ import com.android.systemui.recents.RecentsModule;
 import com.android.systemui.shortcut.ShortcutKeyDispatcher;
 import com.android.systemui.statusbar.dagger.StatusBarModule;
 import com.android.systemui.statusbar.notification.InstantAppNotifier;
-import com.android.systemui.statusbar.phone.GameSpaceServiceDelegate;
+import com.android.systemui.game.GameSpaceServiceDelegate;
 import com.android.systemui.statusbar.phone.StatusBar;
 import com.android.systemui.statusbar.tv.TvStatusBar;
 import com.android.systemui.statusbar.tv.notifications.TvNotificationPanel;

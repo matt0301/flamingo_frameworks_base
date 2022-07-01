@@ -1,0 +1,17 @@
+android_library {
+    name: "SystemUIGameLib",
+    srcs: [
+        "src/main/java/**/*.kt",
+        ":SystemUIGameLib-aidl-sources",
+    ],
+    java_version: "1.8",
+    min_sdk_version: "current",
+}
+
+filegroup {
+    name: "SystemUIGameLib-aidl-sources",
+    srcs: [
+        "src/main/aidl/**/*.aidl",
+    ],
+    path: "src/main/aidl",
+}

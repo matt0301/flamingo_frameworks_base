@@ -126,6 +126,7 @@ android_library {
         "tensorflowlite_java",
         "colorkt",
         "themelib",
+        "SystemUIGameLib",
     ],
     manifest: "AndroidManifest.xml",
     defaults: [

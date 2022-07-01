@@ -75,7 +75,7 @@ import com.android.systemui.statusbar.notification.logging.NotificationLogger;
 import com.android.systemui.statusbar.notification.row.ExpandableNotificationRow;
 import com.android.systemui.statusbar.notification.row.ExpandableNotificationRowDragController;
 import com.android.systemui.statusbar.notification.row.OnUserInteractionCallback;
-import com.android.systemui.statusbar.phone.GameSpaceServiceDelegate;
+import com.android.systemui.game.GameSpaceServiceDelegate;
 import com.android.systemui.statusbar.policy.HeadsUpUtil;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.wmshell.BubblesManager;

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.android.systemui.statusbar.phone;
+package com.android.systemui.game;
 
 import android.os.Bundle;
 
-import com.android.systemui.statusbar.phone.IGameSpaceServiceCallback;
+import com.android.systemui.game.IGameSpaceServiceCallback;
 
 /**
  * @hide
