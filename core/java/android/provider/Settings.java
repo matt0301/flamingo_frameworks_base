@@ -5369,13 +5369,6 @@ public final class Settings {
         public static final String DOZE_ON_CHARGE = "doze_on_charge";
 
         /**
-         * Enable udfps detection even when screen is off
-         * Default value is 0
-         * @hide
-         */
-        public static final String SCREEN_OFF_UDFPS = "screen_off_udfps";
-
-        /**
          * @hide
          */
         public static final String SCREENSHOT_SHUTTER_SOUND = "screenshot_shutter_sound";
