@@ -90,13 +90,6 @@ public final class PermissionManager {
     public static final String KILL_APP_REASON_GIDS_CHANGED =
             "permission grant or revoke changed gids";
 
-    private static final String SYSTEM_PKG = "android";
-    private static final String BLUETOOTH_PKG = "com.android.bluetooth";
-    private static final String PHONE_SERVICES_PKG = "com.android.phone";
-    private static final String PRINT_SPOOLER_PKG = "com.android.printspooler";
-    private static final String FUSED_LOCATION_PKG = "com.android.location.fused";
-    private static final String CELL_BROADCAST_SERVICE_PKG = "com.android.cellbroadcastservice";
-
     /**
      * Refuse to install package if groups of permissions are bad
      * - Permission groups should only be shared between apps sharing a certificate
@@ -121,6 +114,14 @@ public final class PermissionManager {
         R.string.config_systemVisualIntelligence};
 
     private static final String[] INDICATOR_EXEMPTED_PACKAGES = new String[EXEMPTED_ROLES.length];
+    private static final List<String> ADDITIONAL_INDICATOR_EXEMPTED_PACKAGES = List.of(
+        "android",
+        "com.android.bluetooth",
+        "com.android.cellbroadcastservice",
+        "com.android.location.fused",
+        "com.android.phone",
+        "com.android.printspooler"
+    );
 
     /**
      * Note: Changing this won't do anything on its own - you should also change the filtering in
@@ -943,13 +944,7 @@ public final class PermissionManager {
      */
     public static Set<String> getIndicatorExemptedPackages(@NonNull Context context) {
         updateIndicatorExemptedPackages(context);
-        ArraySet<String> pkgNames = new ArraySet<>();
-        pkgNames.add(SYSTEM_PKG);
-        pkgNames.add(BLUETOOTH_PKG);
-        pkgNames.add(PHONE_SERVICES_PKG);
-        pkgNames.add(PRINT_SPOOLER_PKG);
-        pkgNames.add(FUSED_LOCATION_PKG);
-        pkgNames.add(CELL_BROADCAST_SERVICE_PKG);
+        ArraySet<String> pkgNames = new ArraySet<>(ADDITIONAL_INDICATOR_EXEMPTED_PACKAGES);
         for (int i = 0; i < INDICATOR_EXEMPTED_PACKAGES.length; i++) {
             String exemptedPackage = INDICATOR_EXEMPTED_PACKAGES[i];
             if (exemptedPackage != null) {
