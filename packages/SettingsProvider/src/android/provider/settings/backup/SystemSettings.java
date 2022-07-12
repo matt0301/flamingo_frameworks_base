@@ -92,6 +92,7 @@ public class SystemSettings {
         Settings.System.ARTWORK_MEDIA_BACKGROUND,
         Settings.System.ARTWORK_MEDIA_BACKGROUND_ENABLE_BLUR,
         Settings.System.ARTWORK_MEDIA_BACKGROUND_BLUR_RADIUS,
+        Settings.System.ARTWORK_MEDIA_BACKGROUND_FADE_PERCENT,
         Settings.System.ARTWORK_MEDIA_BACKGROUND_ALPHA,
         Settings.System.RINGTONE_VIBRATION_PATTERN,
         Settings.System.CUSTOM_RINGTONE_VIBRATION_PATTERN,
