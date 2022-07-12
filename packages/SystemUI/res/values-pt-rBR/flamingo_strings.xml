@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2022 FlamingoOS Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <!-- AlertSlider -->
+    <string name="alert_slider_mode_priority_text">Prioridade</string>
+    <string name="alert_slider_mode_dnd_text">Não Pertube</string>
+
+    <!-- Reader mode QS tile -->
+    <string name="quick_settings_reading_mode">Modo Leitura</string>
+    <string name="accessibility_quick_settings_reading_mode_on">Modo Leitura ligado.</string>
+    <string name="accessibility_quick_settings_reading_mode_off">Modo Leitura desligado.</string>
+    <string name="accessibility_quick_settings_reading_mode_changed_on">Modo Leitura foi ligado.</string>
+    <string name="accessibility_quick_settings_reading_mode_changed_off">Modo Leitura foi desligado.</string>
+
+    <!-- Refresh Rate Tile -->
+    <string name="refresh_rate_tile_label">Frequência de Atualização da Tela</string>
+
+    <!-- Label for UI element which allows deleting the screenshot [CHAR LIMIT=30] -->
+    <string name="screenshot_delete_label">Deletar</string>
+    <!-- Content description indicating that tapping the element will allow deleting the screenshot [CHAR LIMIT=NONE] -->
+    <string name="screenshot_delete_description">Deletar screenshot</string>
+
+    <!-- Caffeine QS Tile -->
+    <string name="quick_settings_caffeine_label">Cafeína</string>
+    <string name="quick_settings_caffeine_label_off">Desligado</string>
+    <string name="accessibility_quick_settings_caffeine_off">Cafeína desligado</string>
+    <string name="accessibility_quick_settings_caffeine_on">Cafeína ligado</string>
+
+    <!-- Ambient display QS tile -->
+    <string name="quick_settings_ambient_display_label">Tela Ambiente</string>
+    <string name="accessibility_quick_settings_ambient_display_off">Tela Ambiente desligado.</string>
+    <string name="accessibility_quick_settings_ambient_display_on">Tela Ambiente ligado.</string>
+    <string name="accessibility_quick_settings_ambient_display_changed_off">Tela Ambiente for desligado.</string>
+    <string name="accessibility_quick_settings_ambient_display_changed_on">Tela Ambiente foi ligado.</string>
+
+    <!-- Sync QS Tile -->
+    <string name="quick_settings_sync_label">Sicronizar</string>
+    <string name="accessibility_quick_settings_sync_off">Sicronizar desligado</string>
+    <string name="accessibility_quick_settings_sync_on">Sicronizar ligado</string>
+    <string name="accessibility_quick_settings_sync_changed_off">Sicronizar foi desligado</string>
+    <string name="accessibility_quick_settings_sync_changed_on">Sicronizar foi ligado</string>
+
+    <!-- Sound QS Tile -->
+    <string name="quick_settings_sound_label">Som</string>
+    <string name="quick_settings_sound_ring">Tocar</string>
+    <string name="quick_settings_sound_vibrate">Vibrar</string>
+    <string name="quick_settings_sound_dnd">Não Pertube</string>
+
+    <!-- Indication on the keyguard that is shown when the device is charging with a dash charger. Should match keyguard_plugged_in_dash_charging [CHAR LIMIT=40]-->
+    <string name="keyguard_indication_dash_charging_time" formatted="false"><xliff:g id="percentage">%2$s</xliff:g> • Carregamento DASH (<xliff:g id="charging_time_left" example="4 hours and 2 minutes">%s</xliff:g> until full)</string>
+    <string name="keyguard_plugged_in_dash_charging">Carregamento DASH</string>
+
+    <!-- Anti flicker QS tile -->
+    <string name="quick_settings_anti_flicker">Anti-Piscar</string>
+
+    <!-- AOD QS tile -->
+    <string name="quick_settings_aod_label">AOD</string>
+    <string name="quick_settings_aod_on_charge_label">AOD enquanto carrega</string>
+    <string name="quick_settings_aod_off_label">AOD desligado</string>
+    <string name="quick_settings_aod_off_powersave_label">AOD desligado\nEconomia de Bateria</string>
+
+    <!-- DataSwitch Tile -->
+    <string name="qs_data_switch_label">Trocar dados entre cartões SIM</string>
+    <string name="qs_data_switch_toast_0">Não existe cartão SIM inserido nesse momento</string>
+    <string name="qs_data_switch_toast_1">Só existe 1 cartão SIM inserido nesse momento</string>
+    <string name="qs_data_switch_changed_1">Trocar dados para o cartão SIM 1.</string>
+    <string name="qs_data_switch_changed_2">Trocar dados para o cartão SIM 2.</string>
+
+    <!-- Screen record -->
+    <!-- Label for notification action to delete a screen recording file [CHAR LIMIT=35] -->
+    <string name="screenrecord_delete_label">Deletar</string>
+    <!-- A toast message shown after successfully deleting a screen recording [CHAR LIMIT=NONE] -->
+    <string name="screenrecord_delete_description">Gravação de Tela deletada</string>
+    <string name="screenrecord_stopdot_label">Mostrar botão de parar\nSegure para move-lo</string>
+    <string name="screenrecord_lowquality_label">Qualidade de gravação menor, para o arquivo de gravação tambêm ser menor</string>
+    <string name="screenrecord_longer_timeout_switch_label">Maior limite do arquivo\nLimitar o aquivo de gravação para 15GiB</string>
+
+    <!-- FPS Info tile -->
+    <string name="quick_settings_fpsinfo_label">Informação de FPS</string>
+    <string name="accessibility_quick_settings_fpsinfo_off">Informação de FPS desligado</string>
+    <string name="accessibility_quick_settings_fpsinfo_on">Informação de FPS ligado</string>
+
+    <!-- HeadsUp Tile -->
+    <string name="quick_settings_headsup_label">Heads up</string>
+    <string name="accessibility_quick_settings_headsup_enabled">Notificações Heads-up ligadas</string>
+    <string name="accessibility_quick_settings_headsup_disabled">Notificaçẽs Heads-up desligadas</string>
+
+    <!-- Advanced Reboot -->
+    <string name="global_action_restart_advanced">Avançado</string>
+    <string name="global_action_restart_recovery">Recuperação</string>
+    <string name="global_action_restart_bootloader">Bootloader</string>
+    <string name="global_action_restart_ui">SystemUI</string>
+
+    <!-- Title of statusbar tuner -->
+    <string name="status_bar_icons">Ícones da barra de status</string>
+
+    <!-- Name of the roaming status bar icon. -->
+    <string name="status_bar_roaming">Indicador Roaming</string>
+
+    <!-- WiFi standard numbering on statusbar -->
+    <string name="status_bar_wifi_standard">Número de WIFI padrão</string>
+
+</resources>
