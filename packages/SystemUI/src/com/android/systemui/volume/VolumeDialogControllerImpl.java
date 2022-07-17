@@ -165,8 +165,9 @@ public class VolumeDialogControllerImpl implements VolumeDialogController, Dumpa
             mDeviceInteractive = false;
         }
     };
-
+    @GuardedBy("this")
     private boolean mVolumePanelOnLeft;
+    private final int mDefaultVolumePanelOnLeft;
 
     @Inject
     public VolumeDialogControllerImpl(
@@ -182,6 +183,8 @@ public class VolumeDialogControllerImpl implements VolumeDialogController, Dumpa
             PackageManager packageManager,
             WakefulnessLifecycle wakefulnessLifecycle) {
         mContext = context.getApplicationContext();
+        mDefaultVolumePanelOnLeft = mContext.getResources()
+            .getBoolean(R.bool.config_audioPanelOnLeftSide) ? 1 : 0;
         mPackageManager = packageManager;
         mWakefulnessLifecycle = wakefulnessLifecycle;
         Events.writeEvent(Events.EVENT_COLLECTION_STARTED);
@@ -200,6 +203,7 @@ public class VolumeDialogControllerImpl implements VolumeDialogController, Dumpa
         );
         mRingerModeObservers.init();
         mBroadcastDispatcher = broadcastDispatcher;
+        mWorker.post(() -> updateVolumePanelPositionWLocked());
         mObserver.init();
         mReceiver.init();
         mVibrator = optionalVibrator;
@@ -213,9 +217,7 @@ public class VolumeDialogControllerImpl implements VolumeDialogController, Dumpa
                         VolumePolicy.A11Y_MODE_MEDIA_A11Y_VOLUME);
 
         updateLinkNotificationConfigW();
-
         mWakefulnessLifecycle.addObserver(mWakefullnessLifecycleObserver);
-        mWorker.post(() -> updateVolumePanelPositionW());
     }
 
     public AudioManager getAudioManager() {
@@ -389,7 +391,9 @@ public class VolumeDialogControllerImpl implements VolumeDialogController, Dumpa
 
     @Override
     public boolean isVolumePanelOnLeft() {
-        return mVolumePanelOnLeft;
+        synchronized (this) {
+            return mVolumePanelOnLeft;
+        }
     }
 
     private void playTouchFeedback() {
@@ -619,14 +623,15 @@ public class VolumeDialogControllerImpl implements VolumeDialogController, Dumpa
         return true;
     }
 
-    private boolean updateVolumePanelPositionW() {
-        final boolean def = mContext.getResources().getBoolean(R.bool.config_audioPanelOnLeftSide);
+    private boolean updateVolumePanelPositionWLocked() {
         final boolean volumePanelOnLeft = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.VOLUME_PANEL_ON_LEFT, def ? 1 : 0) == 1;
-        if (mVolumePanelOnLeft == volumePanelOnLeft) {
-            return false;
+                Settings.System.VOLUME_PANEL_ON_LEFT, mDefaultVolumePanelOnLeft) == 1;
+        synchronized (this) {
+            if (mVolumePanelOnLeft == volumePanelOnLeft) {
+                return false;
+            }
+            mVolumePanelOnLeft = volumePanelOnLeft;
         }
-        mVolumePanelOnLeft = volumePanelOnLeft;
         return true;
     }
 
@@ -1118,6 +1123,12 @@ public class VolumeDialogControllerImpl implements VolumeDialogController, Dumpa
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
+            if (VOLUME_PANEL_ON_LEFT_URI.equals(uri)) {
+                if (updateVolumePanelPositionWLocked()) {
+                    mCallbacks.onVolumePanelPositionChanged(mVolumePanelOnLeft);
+                }
+                return;
+            }
             boolean changed = false;
             if (ZEN_MODE_URI.equals(uri)) {
                 changed = updateZenModeW();
@@ -1127,11 +1138,6 @@ public class VolumeDialogControllerImpl implements VolumeDialogController, Dumpa
             }
             if (VOLUME_LINK_NOTIFICATION_URI.equals(uri)) {
                 changed = updateLinkNotificationConfigW();
-            }
-            if (VOLUME_PANEL_ON_LEFT_URI.equals(uri)) {
-                if (updateVolumePanelPositionW()) {
-                    mCallbacks.onVolumePanelPositionChanged(mVolumePanelOnLeft);
-                }
             }
 
             if (changed) {
