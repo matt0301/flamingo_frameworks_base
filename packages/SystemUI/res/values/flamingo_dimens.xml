@@ -23,7 +23,6 @@
     <!-- Absolute width of the alert slider -->
     <integer name="alertslider_width">0</integer>
 
-    <dimen name="alertslider_dialog_minradius">24dp</dimen>
     <dimen name="alertslider_dialog_minheight">48dp</dimen>
     <dimen name="alertslider_dialog_minwidth">108dp</dimen>
     <dimen name="alertslider_padding">15dp</dimen>
