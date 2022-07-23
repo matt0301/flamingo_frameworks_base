@@ -49,7 +49,6 @@ import com.android.server.BinService.ServiceBinder;
 final class AppErrorDialog extends BaseErrorDialog implements View.OnClickListener {
     private static final String TAG = "AppErrorDialog";
 
-    private final Context mContext;
     private final ActivityManagerService mService;
     private final ActivityManagerGlobalLock mProcLock;
     private final AppErrorResult mResult;
@@ -85,18 +84,16 @@ final class AppErrorDialog extends BaseErrorDialog implements View.OnClickListen
         @Override
         public void onSuccess(String url) {
             // Copy to clipboard
-            final ClipboardManager clipboardManager =
-                mContext.getSystemService(ClipboardManager.class);
+            final ClipboardManager clipboardManager = getContext().getSystemService(ClipboardManager.class);
             clipboardManager.setPrimaryClip(ClipData.newPlainText("Log URL", url));
             // Toast and dismiss dialog
             mHandler.post(() -> {
-                Toast.makeText(mContext, R.string.url_copy_success,
-                    Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), R.string.url_copy_success, Toast.LENGTH_LONG).show();
                 dismiss();
             });
-             // Unbind service
-             if (mIsBinServiceBound) {
-                mContext.unbindService(mConnection);
+            // Unbind service
+            if (mIsBinServiceBound) {
+                getContext().unbindService(mConnection);
             }
         }
 
@@ -104,13 +101,12 @@ final class AppErrorDialog extends BaseErrorDialog implements View.OnClickListen
         public void onError(String message) {
             // Toast and dismiss dialog
             mHandler.post(() -> {
-                Toast.makeText(mContext, R.string.url_copy_failed,
-                    Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), R.string.url_copy_failed, Toast.LENGTH_LONG).show();
                 dismiss();
             });
             // Unbind service
             if (mIsBinServiceBound) {
-                mContext.unbindService(mConnection);
+                getContext().unbindService(mConnection);
             }
         }
     };
@@ -130,7 +126,6 @@ final class AppErrorDialog extends BaseErrorDialog implements View.OnClickListen
 
     public AppErrorDialog(Context context, ActivityManagerService service, Data data) {
         super(context);
-        mContext = context;
 
         mService = service;
         mProcLock = service.mProcLock;
@@ -145,13 +140,13 @@ final class AppErrorDialog extends BaseErrorDialog implements View.OnClickListen
         CharSequence name;
         if (mProc.getPkgList().size() == 1
                 && (name = context.getPackageManager().getApplicationLabel(mProc.info)) != null) {
-            setTitle(mContext.getString(data.repeating ? R.string.aerr_application_repeated
+            setTitle(getContext().getString(data.repeating ? R.string.aerr_application_repeated
                             : R.string.aerr_application,
                     bidi.unicodeWrap(name.toString()),
                     bidi.unicodeWrap(mProc.info.processName)));
         } else {
             name = mProc.processName;
-            setTitle(mContext.getString(data.repeating ?
+            setTitle(getContext().getString(data.repeating ?
                     R.string.aerr_process_repeated : R.string.aerr_process,
                     bidi.unicodeWrap(name.toString())));
         }
@@ -168,7 +163,7 @@ final class AppErrorDialog extends BaseErrorDialog implements View.OnClickListen
             getWindow().setType(LayoutParams.TYPE_SYSTEM_ERROR);
         }
 
-        // Dismiss the dialog on timeout
+        // After the timeout, pretend the user clicked the quit button
         mHandler.sendMessageDelayed(mHandler.obtainMessage(TIMEOUT),
                 DISMISS_TIMEOUT);
     }
@@ -177,7 +172,7 @@ final class AppErrorDialog extends BaseErrorDialog implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final FrameLayout frame = findViewById(android.R.id.custom);
-        LayoutInflater.from(mContext).inflate(R.layout.app_error_dialog, frame, true);
+        LayoutInflater.from(getContext()).inflate(R.layout.app_error_dialog, frame, true);
 
         if (mIsRestartable) {
             final TextView restart = findViewById(R.id.aerr_restart);
@@ -196,10 +191,13 @@ final class AppErrorDialog extends BaseErrorDialog implements View.OnClickListen
         findViewById(R.id.aerr_close).setOnClickListener(this);
         findViewById(R.id.aerr_app_info).setOnClickListener(this);
 
-        final boolean showMute = !Build.IS_USER && Settings.Global.getInt(mContext.getContentResolver(),
-                Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) != 0
-                && Settings.Global.getInt(mContext.getContentResolver(),
-                Settings.Global.SHOW_MUTE_IN_CRASH_DIALOG, 0) != 0;
+        final boolean showMute = !Build.IS_USER
+                && Settings.Global.getInt(
+                    getContext().getContentResolver(),
+                    Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) != 0
+                && Settings.Global.getInt(
+                    getContext().getContentResolver(),
+                    Settings.Global.SHOW_MUTE_IN_CRASH_DIALOG, 0) != 0;
 
         if (showMute) {
             final TextView mute = findViewById(R.id.aerr_mute);
@@ -254,26 +252,29 @@ final class AppErrorDialog extends BaseErrorDialog implements View.OnClickListen
                 break;
             case R.id.aerr_mute:
                 mHandler.obtainMessage(MUTE).sendToTarget();
-                break;
         }
         dismiss();
     }
 
     private void postToBinAndCopyURL() {
         // Update the view for notifying the user that the logs is uploading right now
-        setTitle(mContext.getString(R.string.uploading_log_title));
+        setTitle(getContext().getString(R.string.uploading_log_title));
         final LinearLayout layout = findViewById(R.id.aerr_dialog);
         // Hide all the views except progress bar
         for (int i = 0; i < layout.getChildCount(); i++) {
             final View view = layout.getChildAt(i);
             if (view.getId() == R.id.aerr_upload_progress) {
                 view.setVisibility(View.VISIBLE);
-            } else if (view.getVisibility() == View.VISIBLE){
+            } else if (view.getVisibility() == View.VISIBLE) {
                 view.setVisibility(View.GONE);
             }
         }
-        mIsBinServiceBound = mContext.bindServiceAsUser(new Intent(mContext, BinService.class),
-            mConnection, Context.BIND_AUTO_CREATE, UserHandle.SYSTEM);
+        mIsBinServiceBound = getContext().bindServiceAsUser(
+            new Intent(getContext(), BinService.class),
+            mConnection,
+            Context.BIND_AUTO_CREATE,
+            UserHandle.SYSTEM
+        );
     }
 
     static class Data {
