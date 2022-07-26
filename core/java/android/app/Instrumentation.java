@@ -57,6 +57,7 @@ import android.view.Window;
 import android.view.WindowManagerGlobal;
 
 import com.android.internal.content.ReferrerIntent;
+import com.android.internal.gmscompat.AttestationHooks;
 import com.android.internal.util.flamingo.PixelPropsUtils;
 
 import java.io.File;
@@ -1192,6 +1193,7 @@ public class Instrumentation {
         Application app = getFactory(context.getPackageName())
                 .instantiateApplication(cl, className);
         app.attach(context);
+        AttestationHooks.initApplicationBeforeOnCreate(app);
         PixelPropsUtils.setProps(app.getPackageName());
         return app;
     }
@@ -1211,6 +1213,7 @@ public class Instrumentation {
         GmsCompat.maybeEnable(context);
         Application app = (Application)clazz.newInstance();
         app.attach(context);
+        AttestationHooks.initApplicationBeforeOnCreate(app);
         PixelPropsUtils.setProps(app.getPackageName());
         return app;
     }
