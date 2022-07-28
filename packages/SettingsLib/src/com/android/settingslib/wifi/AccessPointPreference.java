@@ -259,17 +259,17 @@ public class AccessPointPreference extends Preference {
 
         updateBadge(context);
 
-        String summary = mForSavedNetworks ? mAccessPoint.getSavedNetworkSummary()
+        final String apSummary = mForSavedNetworks ? mAccessPoint.getSavedNetworkSummary()
                                            : mAccessPoint.getSettingsSummary();
-
+        String summary = apSummary;
         if (mAccessPoint.isPskSaeTransitionMode()) {
-           summary = "WPA3(SAE Transition Mode) " + summary;
+           summary = context.getString(R.string.psk_sae_transition_mode_summary, apSummary);
         } else if (mAccessPoint.isOweTransitionMode()) {
-           summary = "WPA3(OWE Transition Mode) " + summary;
+           summary = context.getString(R.string.owe_transition_mode_summary, apSummary);
         } else if (mAccessPoint.getSecurity() == AccessPoint.SECURITY_SAE) {
-           summary = "WPA3(SAE) " + summary;
+           summary = context.getString(R.string.sae_security_summary, apSummary);
         } else if (mAccessPoint.getSecurity() == AccessPoint.SECURITY_OWE) {
-           summary = "WPA3(OWE) " + summary;
+           summary = context.getString(R.string.owe_security_summary, apSummary);
         }
 
         setSummary(summary);
