@@ -53,8 +53,6 @@ import com.android.systemui.util.ViewController;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -262,10 +260,8 @@ public class KeyguardStatusBarViewController extends ViewController<KeyguardStat
                 }
         );
 
-        Resources r = getResources();
-        mBlockedIcons = Collections.unmodifiableList(Arrays.asList(
-                r.getString(com.android.internal.R.string.status_bar_alarm_clock),
-                r.getString(com.android.internal.R.string.status_bar_call_strength)));
+        final Resources r = getResources();
+        mBlockedIcons = List.of(r.getString(com.android.internal.R.string.status_bar_call_strength));
         mNotificationsHeaderCollideDistance = r.getDimensionPixelSize(
                 R.dimen.header_notifications_collide_distance);
     }

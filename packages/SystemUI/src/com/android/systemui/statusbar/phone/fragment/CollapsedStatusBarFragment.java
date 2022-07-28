@@ -68,7 +68,6 @@ import com.android.systemui.statusbar.policy.KeyguardStateController;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -113,8 +112,6 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
     private final PanelExpansionStateManager mPanelExpansionStateManager;
     private final StatusBarIconController mStatusBarIconController;
     private final StatusBarHideIconsForBouncerManager mStatusBarHideIconsForBouncerManager;
-
-    private List<String> mBlockedIcons = new ArrayList<>();
 
     private SignalCallback mSignalCallback = new SignalCallback() {
         @Override
@@ -190,9 +187,7 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
         }
         mDarkIconManager = new DarkIconManager(view.findViewById(R.id.statusIcons), mFeatureFlags);
         mDarkIconManager.setShouldLog(true);
-        mBlockedIcons.add(getString(com.android.internal.R.string.status_bar_alarm_clock));
-        mBlockedIcons.add(getString(com.android.internal.R.string.status_bar_call_strength));
-        mDarkIconManager.setBlockList(mBlockedIcons);
+        mDarkIconManager.setBlockList(List.of(getString(com.android.internal.R.string.status_bar_call_strength)));
         mStatusBarIconController.addIconGroup(mDarkIconManager);
         mSystemIconArea = mStatusBar.findViewById(R.id.system_icon_area);
         mClockView = mStatusBar.findViewById(R.id.clock);
