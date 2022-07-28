@@ -22,4 +22,9 @@
     <string name="screen_zoom_summary_smaller">更小</string>
     <!-- Description for the screen zoom level that makes interface elements smallest. [CHAR LIMIT=24] -->
     <string name="screen_zoom_summary_smallest">最小</string>
+
+    <string name="psk_sae_transition_mode_summary">WPA3(SAE 過渡模式) <xliff:g id="ap_summary">%1$s</xliff:g></string>
+    <string name="owe_transition_mode_summary">WPA3(OWE 過渡模式) <xliff:g id="ap_summary">%1$s</xliff:g></string>
+    <string name="sae_security_summary">WPA3(SAE) <xliff:g id="ap_summary">%1$s</xliff:g></string>
+    <string name="owe_security_summary">WPA3(OWE) <xliff:g id="ap_summary">%1$s</xliff:g></string>
 </resources>
