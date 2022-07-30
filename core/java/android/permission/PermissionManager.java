@@ -120,7 +120,8 @@ public final class PermissionManager {
         "com.android.cellbroadcastservice",
         "com.android.location.fused",
         "com.android.phone",
-        "com.android.printspooler"
+        "com.android.printspooler",
+        "com.qualcomm.qti.cne"
     );
 
     /**
