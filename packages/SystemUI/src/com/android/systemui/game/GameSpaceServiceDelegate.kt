@@ -65,6 +65,7 @@ import com.android.systemui.screenrecord.ScreenRecordDialog.PREF_DOT
 import com.android.systemui.screenrecord.ScreenRecordDialog.PREF_LONGER
 import com.android.systemui.screenrecord.ScreenRecordDialog.PREF_LOW
 import com.android.systemui.settings.UserContextProvider
+import com.android.systemui.statusbar.events.PrivacyDotViewController
 import com.android.systemui.statusbar.notification.collection.NotificationEntry
 import com.android.systemui.statusbar.notification.interruption.NotificationInterruptStateProvider
 import com.android.systemui.statusbar.notification.interruption.NotificationInterruptSuppressor
@@ -98,6 +99,7 @@ class GameSpaceServiceDelegate @Inject constructor(
     private val iActivityManager: IActivityManager,
     private val recordingController: RecordingController,
     private val userContextProvider: UserContextProvider,
+    private val privacyDotViewController: PrivacyDotViewController,
     context: Context
 ) : SystemUI(context) {
 
@@ -147,6 +149,12 @@ class GameSpaceServiceDelegate @Inject constructor(
                             disableCallRinging = getBoolSetting(key, DEFAULT_GAMESPACE_DISABLE_CALL_RINGING)
                         }
                     }
+                    Settings.System.GAMESPACE_HIDE_PRIVACY_INDICATORS -> {
+                        stateMutex.withLock {
+                            hidePrivacyIndicators = getBoolSetting(key, DEFAULT_GAMESPACE_HIDE_PRIVACY_INDICATORS)
+                            updatePrivacyIndicatorsLocked()
+                        }
+                    }
                 }
             }
         }
@@ -171,6 +179,9 @@ class GameSpaceServiceDelegate @Inject constructor(
 
     @GuardedBy("stateMutex")
     private var disableCallRinging = DEFAULT_GAMESPACE_DISABLE_CALL_RINGING
+
+    @GuardedBy("stateMutex")
+    private var hidePrivacyIndicators = DEFAULT_GAMESPACE_HIDE_PRIVACY_INDICATORS
 
     @GuardedBy("stateMutex")
     private var taskStackListenerRegistered = false
@@ -557,7 +568,8 @@ class GameSpaceServiceDelegate @Inject constructor(
             Settings.System.GAMESPACE_PACKAGE_LIST,
             Settings.System.GAMESPACE_DYNAMIC_MODE,
             Settings.System.GAMESPACE_DISABLE_HEADSUP,
-            Settings.System.GAMESPACE_DISABLE_FULLSCREEN_INTENT
+            Settings.System.GAMESPACE_DISABLE_FULLSCREEN_INTENT,
+            Settings.System.GAMESPACE_HIDE_PRIVACY_INDICATORS
         )
     }
 
@@ -574,6 +586,10 @@ class GameSpaceServiceDelegate @Inject constructor(
             disableCallRinging = getBoolSetting(
                 Settings.System.GAMESPACE_DISABLE_CALL_RINGING,
                 DEFAULT_GAMESPACE_DISABLE_CALL_RINGING
+            )
+            hidePrivacyIndicators = getBoolSetting(
+                Settings.System.GAMESPACE_HIDE_PRIVACY_INDICATORS,
+                DEFAULT_GAMESPACE_HIDE_PRIVACY_INDICATORS
             )
         }
     }
@@ -674,6 +690,10 @@ class GameSpaceServiceDelegate @Inject constructor(
         }
     }
 
+    private fun updatePrivacyIndicatorsLocked() {
+        privacyDotViewController.setHiddenForGameMode(gameModeEnabled && hidePrivacyIndicators)
+    }
+
     private suspend fun enableGameMode(packageName: String, topAppChanged: Boolean) {
         logD("enableGameMode")
         stateMutex.withLock {
@@ -729,6 +749,7 @@ class GameSpaceServiceDelegate @Inject constructor(
             }
             registerCallStateChangeListener()
             gameModeEnabled = bound
+            updatePrivacyIndicatorsLocked()
         }
     }
 
@@ -805,6 +826,7 @@ class GameSpaceServiceDelegate @Inject constructor(
             brightnessModeChanged = false
         }
         gameModeEnabled = false
+        updatePrivacyIndicatorsLocked()
     }
 
     private suspend fun unregisterCallStateChangeListener() {

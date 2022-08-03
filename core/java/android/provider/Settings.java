@@ -5654,6 +5654,14 @@ public final class Settings {
         public static final String GAMESPACE_DISABLE_CALL_RINGING = "gamespace_disable_call_ringing";
 
         /**
+         * Whether privacy indicators should be hidden in game mode.
+         * Default 0.
+         * @hide
+         */
+        @Readable
+        public static final String GAMESPACE_HIDE_PRIVACY_INDICATORS = "gamespace_hide_privacy_indicators";
+
+        /**
          * IMPORTANT: If you add a new public settings you also have to add it to
          * PUBLIC_SETTINGS below. If the new setting is hidden you have to add
          * it to PRIVATE_SETTINGS below. Also add a validator that can validate
