@@ -43,4 +43,8 @@
 
     <!-- GameSpace service component that will be bound with SystemUI for game mode -->
     <string name="config_gameSpaceServiceComponent" />
+    
+    <!--The number of columns in the QuickQSPanel -->
+    <integer name="kscope_quick_qs_panel_max_tiles">5</integer>
+    <integer name="kscope_quick_qs_panel_max_columns">5</integer>
 </resources>

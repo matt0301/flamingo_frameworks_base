@@ -39,10 +39,12 @@ public class QuickQSPanel extends QSPanel {
 
     private boolean mDisabledByPolicy;
     private int mMaxTiles;
+    private int mMaxColumns;
 
     public QuickQSPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mMaxTiles = getResources().getInteger(R.integer.quick_qs_panel_max_tiles);
+        mMaxTiles = getResources().getInteger(R.integer.kscope_quick_qs_panel_max_tiles);
+        mMaxColumns = getResources().getInteger(R.integer.kscope_quick_qs_panel_max_columns);
     }
 
     @Override
@@ -51,6 +53,7 @@ public class QuickQSPanel extends QSPanel {
         if (mHorizontalContentContainer != null) {
             mHorizontalContentContainer.setClipChildren(false);
         }
+        updateColumns();
     }
 
     @Override
@@ -107,6 +110,10 @@ public class QuickQSPanel extends QSPanel {
             state = copy;
         }
         super.drawTile(r, state);
+    }
+
+    public void updateColumns() {
+        mTileLayout.setMaxColumns(mMaxColumns);
     }
 
     public void setMaxTiles(int maxTiles) {
@@ -183,7 +190,7 @@ public class QuickQSPanel extends QSPanel {
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                     LayoutParams.WRAP_CONTENT);
             setLayoutParams(lp);
-            setMaxColumns(4);
+            setMaxColumns(5);
         }
 
         @Override
