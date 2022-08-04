@@ -116,17 +116,16 @@ class GameSpaceServiceDelegate @Inject constructor(
                                 registerTaskStackListenerLocked()
                             } else {
                                 unregisterTaskStackListenerLocked()
-                                disableGameMode()
+                                disableGameModeLocked()
                             }
                         }
                     }
                     Settings.System.GAMESPACE_PACKAGE_LIST -> {
-                        val packages = getPackages(key)
                         stateMutex.withLock {
-                            gameSpacePackages = packages
-                        }
-                        if (!packages.contains(currentTopPackageName)) {
-                            disableGameMode()
+                            gameSpacePackages = getPackages(key)
+                            if (!gameSpacePackages.contains(currentTopPackageName)) {
+                                disableGameModeLocked()
+                            }
                         }
                     }
                     Settings.System.GAMESPACE_DYNAMIC_MODE -> {
