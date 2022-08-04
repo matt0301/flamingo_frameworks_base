@@ -554,8 +554,8 @@ class GameSpaceServiceDelegate @Inject constructor(
         gameSpaceIntent.component = serviceComponent
 
         coroutineScope.launch(Dispatchers.IO) {
-            loadSettingsLocked()
             stateMutex.withLock {
+                loadSettingsLocked()
                 if (gameSpaceEnabled) {
                     registerTaskStackListenerLocked()
                 }
@@ -573,24 +573,22 @@ class GameSpaceServiceDelegate @Inject constructor(
     }
 
     private suspend fun loadSettingsLocked() {
-        stateMutex.withLock {
-            gameSpaceEnabled = getBoolSetting(Settings.System.GAMESPACE_ENABLED, DEFAULT_GAMESPACE_ENABLED)
-            gameSpacePackages = getPackages(Settings.System.GAMESPACE_PACKAGE_LIST)
-            dynamicMode = getBoolSetting(Settings.System.GAMESPACE_DYNAMIC_MODE, DEFAULT_GAMESPACE_DYNAMIC_MODE)
-            disableHeadsUp = getBoolSetting(Settings.System.GAMESPACE_DISABLE_HEADSUP, DEFAULT_GAMESPACE_DISABLE_HEADSUP)
-            disableFullscreenIntent = getBoolSetting(
-                Settings.System.GAMESPACE_DISABLE_FULLSCREEN_INTENT,
-                DEFAULT_GAMESPACE_DISABLE_FULLSCREEN_INTENT
-            )
-            disableCallRinging = getBoolSetting(
-                Settings.System.GAMESPACE_DISABLE_CALL_RINGING,
-                DEFAULT_GAMESPACE_DISABLE_CALL_RINGING
-            )
-            hidePrivacyIndicators = getBoolSetting(
-                Settings.System.GAMESPACE_HIDE_PRIVACY_INDICATORS,
-                DEFAULT_GAMESPACE_HIDE_PRIVACY_INDICATORS
-            )
-        }
+        gameSpaceEnabled = getBoolSetting(Settings.System.GAMESPACE_ENABLED, DEFAULT_GAMESPACE_ENABLED)
+        gameSpacePackages = getPackages(Settings.System.GAMESPACE_PACKAGE_LIST)
+        dynamicMode = getBoolSetting(Settings.System.GAMESPACE_DYNAMIC_MODE, DEFAULT_GAMESPACE_DYNAMIC_MODE)
+        disableHeadsUp = getBoolSetting(Settings.System.GAMESPACE_DISABLE_HEADSUP, DEFAULT_GAMESPACE_DISABLE_HEADSUP)
+        disableFullscreenIntent = getBoolSetting(
+            Settings.System.GAMESPACE_DISABLE_FULLSCREEN_INTENT,
+            DEFAULT_GAMESPACE_DISABLE_FULLSCREEN_INTENT
+        )
+        disableCallRinging = getBoolSetting(
+            Settings.System.GAMESPACE_DISABLE_CALL_RINGING,
+            DEFAULT_GAMESPACE_DISABLE_CALL_RINGING
+        )
+        hidePrivacyIndicators = getBoolSetting(
+            Settings.System.GAMESPACE_HIDE_PRIVACY_INDICATORS,
+            DEFAULT_GAMESPACE_HIDE_PRIVACY_INDICATORS
+        )
     }
 
     private fun registerSettingsObservers(vararg keys: String) {
@@ -677,11 +675,13 @@ class GameSpaceServiceDelegate @Inject constructor(
             if (isDynamicMode && isGame(packageName)) {
                 logD("Dynamically adding $packageName to list")
                 selectedPackages.add(packageName)
-                systemSettings.putStringForUser(
-                    Settings.System.GAMESPACE_PACKAGE_LIST,
-                    selectedPackages.joinToString(PACKAGE_DELIMITER),
-                    UserHandle.USER_CURRENT
-                )
+                withContext(Dispatchers.IO) {
+                    systemSettings.putStringForUser(
+                        Settings.System.GAMESPACE_PACKAGE_LIST,
+                        selectedPackages.joinToString(PACKAGE_DELIMITER),
+                        UserHandle.USER_CURRENT
+                    )
+                }
                 enableGameMode(packageName, topAppChanged)
             } else {
                 disableGameMode()
