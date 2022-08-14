@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 The CyanogenMod Project
+ * Copyright (C) 2022 FlamingoOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,11 @@ package com.android.internal.os;
 
 import android.view.KeyEvent;
 
-public interface DeviceKeyHandler {
+import com.android.internal.os.IKeyHandler;
 
-    /**
-     * Invoked when an unknown key was detected by the system, letting the device handle
-     * this special keys prior to pass the key to the active app.
-     *
-     * @param event The key event to be handled
-     * @return null if event is consumed, KeyEvent to be handled otherwise
-     */
-    public KeyEvent handleKeyEvent(KeyEvent event);
+/**
+ * @hide
+ */
+oneway interface IDeviceKeyManager {
+    void registerKeyHandler(in IKeyHandler keyHandler, in int[] scanCodes, in int[] actions);
 }
