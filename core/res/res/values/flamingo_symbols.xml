@@ -55,11 +55,6 @@
 
     <!-- AlertSlider -->
     <java-symbol type="bool" name="config_hasAlertSlider" />
-    <java-symbol type="string" name="alert_slider_mode_normal" />
-    <java-symbol type="string" name="alert_slider_mode_priority" />
-    <java-symbol type="string" name="alert_slider_mode_vibrate" />
-    <java-symbol type="string" name="alert_slider_mode_silent" />
-    <java-symbol type="string" name="alert_slider_mode_dnd" />
 
     <!-- Package Manager -->
     <java-symbol type="array" name="config_deviceDisabledComponents" />

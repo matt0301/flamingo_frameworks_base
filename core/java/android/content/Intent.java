@@ -4853,7 +4853,7 @@ public class Intent implements Parcelable, Cloneable {
 
     /**
      * Extra data for the position of alertslider.
-     * Should be an integer value in the range [0..2].
+     * Should be one of AlertSlider.Mode.
      *
      * @hide
      */
@@ -4862,12 +4862,7 @@ public class Intent implements Parcelable, Cloneable {
 
     /**
      * Extra data for the mode corresponding to the position of alertslider.
-     * Should be one of these string constants:
-     * @string/alert_slider_mode_normal
-     * @string/alert_slider_mode_priority
-     * @string/alert_slider_mode_vibrate
-     * @string/alert_slider_mode_silent
-     * @string/alert_slider_mode_dnd
+     * Should be one of AlertSlider.Position.
      *
      * @hide
      */

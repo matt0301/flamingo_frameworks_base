@@ -37,6 +37,7 @@ import android.widget.TextView
 import androidx.core.animation.addListener
 import androidx.core.view.doOnLayout
 
+import com.android.internal.os.AlertSlider.Position
 import com.android.systemui.R
 
 import javax.inject.Inject
@@ -59,8 +60,8 @@ class AlertSliderDialog @Inject constructor(
     private var stepSize = 0
     private val positionGravity: Int
 
-    private var currPosition = 0
-    private var prevPosition = 0
+    private lateinit var currPosition: Position
+    private lateinit var prevPosition: Position
 
     private var isPortrait = context.resources.configuration.orientation ==
         Configuration.ORIENTATION_PORTRAIT
@@ -105,7 +106,7 @@ class AlertSliderDialog @Inject constructor(
         label.setText(labelResId)
     }
 
-    fun show(position: Int) {
+    fun show(position: Position) {
         prevPosition = currPosition
         currPosition = position
         appearAnimator?.cancel()
@@ -161,9 +162,9 @@ class AlertSliderDialog @Inject constructor(
         val bounds = windowManager.currentWindowMetrics.bounds
         if (isPortrait) {
             lp.y = alertSliderTopY - (bounds.height() / 2) +
-                ((2 - currPosition) * stepSize) + getOffsetForPosition()
+                getStepForPosition(currPosition) + getOffsetForPosition()
         } else {
-            lp.x = alertSliderTopY - (bounds.width() / 2) + ((2 - currPosition) * stepSize)
+            lp.x = alertSliderTopY - (bounds.width() / 2) + getStepForPosition(currPosition)
             if (context.display.rotation == Surface.ROTATION_270) {
                 lp.x = -lp.x
             }
@@ -171,10 +172,14 @@ class AlertSliderDialog @Inject constructor(
         return lp
     }
 
+    private fun getStepForPosition(position: Position): Int {
+        return (2 - position.ordinal) * stepSize
+    }
+
     private fun getOffsetForPosition() =
         when (currPosition) {
-            0 -> view.measuredHeight / 2
-            2 -> -view.measuredHeight / 2
+            Position.BOTTOM -> view.measuredHeight / 2
+            Position.TOP -> -view.measuredHeight / 2
             else -> 0
         }
 
@@ -185,29 +190,31 @@ class AlertSliderDialog @Inject constructor(
             return
         }
         if (!animate) {
-            if (currPosition == 1) {
+            if (currPosition == Position.MIDDLE) {
                 background.cornerRadius = radius
                 return
             }
             background.cornerRadii = floatArrayOf(
                 radius, radius, // T-L
-                if (currPosition == 0) 0f else radius, if (currPosition == 0) 0f else radius, // T-R
-                if (currPosition == 2) 0f else radius, if (currPosition == 2) 0f else radius, // B-R
+                if (currPosition == Position.BOTTOM) 0f else radius,
+                if (currPosition == Position.BOTTOM) 0f else radius, // T-R
+                if (currPosition == Position.TOP) 0f else radius,
+                if (currPosition == Position.TOP) 0f else radius, // B-R
                 radius, radius, // B-L
             )
         }
         when (currPosition) {
-            0, 2 -> startRadiusAnimator(radius, currPosition, radius, 0f)
-            1 -> startRadiusAnimator(radius, prevPosition, 0f, radius)
+            Position.BOTTOM, Position.TOP -> startRadiusAnimator(radius, currPosition, radius, 0f)
+            Position.MIDDLE -> startRadiusAnimator(radius, prevPosition, 0f, radius)
         }
     }
 
-    private fun startRadiusAnimator(radius: Float, position: Int, vararg values: Float) {
+    private fun startRadiusAnimator(radius: Float, position: Position, vararg values: Float) {
         radiusAnimator = ValueAnimator.ofFloat(*values).apply {
             setDuration(TRANSITION_ANIM_DURATION)
             addUpdateListener {
-                val topRightRadius = if (position == 0) it.animatedValue as Float else radius
-                val bottomRightRadius = if (position == 2) it.animatedValue as Float else radius
+                val topRightRadius = if (position == Position.BOTTOM) it.animatedValue as Float else radius
+                val bottomRightRadius = if (position == Position.TOP) it.animatedValue as Float else radius
                 background.cornerRadii = floatArrayOf(
                     radius, radius,
                     topRightRadius, topRightRadius,

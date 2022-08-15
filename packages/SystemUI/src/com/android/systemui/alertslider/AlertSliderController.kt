@@ -22,13 +22,19 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
 import android.os.Handler
+import android.util.Log
 
+import com.android.internal.os.AlertSlider.Mode
+import com.android.internal.os.AlertSlider.Position
 import com.android.systemui.R
 import com.android.systemui.dagger.SysUISingleton
 import com.android.systemui.dagger.qualifiers.Main
 import com.android.systemui.keyguard.ScreenLifecycle
 
 import javax.inject.Inject
+
+private val TAG = AlertSliderController::class.simpleName!!
+private const val TIMEOUT = 1000L
 
 @SysUISingleton
 class AlertSliderController @Inject constructor(
@@ -38,23 +44,33 @@ class AlertSliderController @Inject constructor(
     private val screenLifecycle: ScreenLifecycle
 ) {
 
-    // Supported modes for AlertSlider positions.
-    private val MODE_NORMAL = context.getString(com.android.internal.R.string.alert_slider_mode_normal)
-    private val MODE_PRIORITY = context.getString(com.android.internal.R.string.alert_slider_mode_priority)
-    private val MODE_VIBRATE = context.getString(com.android.internal.R.string.alert_slider_mode_vibrate)
-    private val MODE_SILENT = context.getString(com.android.internal.R.string.alert_slider_mode_silent)
-    private val MODE_DND = context.getString(com.android.internal.R.string.alert_slider_mode_dnd)
+    private val sliderReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent?) {
+            if (intent?.action != Intent.ACTION_SLIDER_POSITION_CHANGED) return
+            val modeString = intent.getStringExtra(Intent.EXTRA_SLIDER_MODE)
+            val mode = try {
+                Mode.valueOf(modeString)
+            } catch(_: IllegalArgumentException) {
+                Log.e(TAG, "Unknown mode $modeString")
+                return
+            }
+            val positionString = intent.getStringExtra(Intent.EXTRA_SLIDER_POSITION)
+            val position = try {
+                Position.valueOf(positionString)
+            } catch(_: IllegalArgumentException) {
+                Log.e(TAG, "Unknown position $positionString")
+                return
+            }
+            updateDialog(mode)
+            showDialog(position)
+        }
+    }
 
     private val dismissDialogRunnable = Runnable { dialog.dismiss() }
 
     fun start() {
         context.registerReceiver(
-            object: BroadcastReceiver() {
-                override fun onReceive(context: Context, intent: Intent) {
-                    updateDialog(intent.getStringExtra(Intent.EXTRA_SLIDER_MODE))
-                    showDialog(intent.getIntExtra(Intent.EXTRA_SLIDER_POSITION, 0))
-                }
-            },
+            sliderReceiver,
             IntentFilter(Intent.ACTION_SLIDER_POSITION_CHANGED)
         )
     }
@@ -64,33 +80,32 @@ class AlertSliderController @Inject constructor(
         dialog.updateConfiguration(newConfig)
     }
 
-    private fun updateDialog(mode: String) {
+    private fun updateDialog(mode: Mode) {
         when (mode) {
-            MODE_NORMAL -> dialog.setIconAndLabel(
+            Mode.NORMAL -> dialog.setIconAndLabel(
                 R.drawable.ic_volume_ringer,
                 R.string.volume_ringer_status_normal
             )
-            MODE_PRIORITY -> dialog.setIconAndLabel(
+            Mode.PRIORITY -> dialog.setIconAndLabel(
                 com.android.internal.R.drawable.ic_qs_dnd,
                 R.string.alert_slider_mode_priority_text
             )
-            MODE_VIBRATE -> dialog.setIconAndLabel(
+            Mode.VIBRATE -> dialog.setIconAndLabel(
                 R.drawable.ic_volume_ringer_vibrate,
                 R.string.volume_ringer_status_vibrate
             )
-            MODE_SILENT -> dialog.setIconAndLabel(
+            Mode.SILENT -> dialog.setIconAndLabel(
                 R.drawable.ic_volume_ringer_mute,
                 R.string.volume_ringer_status_silent
             )
-            MODE_DND -> dialog.setIconAndLabel(
+            Mode.DND -> dialog.setIconAndLabel(
                 com.android.internal.R.drawable.ic_qs_dnd,
                 R.string.alert_slider_mode_dnd_text
             )
-            else -> throw IllegalArgumentException("Unsupported alert slider dialog mode $mode")
         }
     }
 
-    private fun showDialog(position: Int) {
+    private fun showDialog(position: Position) {
         removeHandlerCalbacks()
         if (screenLifecycle.screenState == ScreenLifecycle.SCREEN_ON) {
             dialog.show(position)
@@ -102,9 +117,5 @@ class AlertSliderController @Inject constructor(
         if (handler.hasCallbacks(dismissDialogRunnable)) {
             handler.removeCallbacks(dismissDialogRunnable)
         }
-    }
-
-    companion object {
-        private const val TIMEOUT = 1000L
     }
 }
