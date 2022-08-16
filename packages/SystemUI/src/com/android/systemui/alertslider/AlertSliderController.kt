@@ -86,13 +86,13 @@ class AlertSliderController @Inject constructor(
                 R.drawable.ic_volume_ringer,
                 R.string.volume_ringer_status_normal
             )
-            Mode.PRIORITY -> dialog.setIconAndLabel(
-                com.android.internal.R.drawable.ic_qs_dnd,
-                R.string.alert_slider_mode_priority_text
-            )
             Mode.VIBRATE -> dialog.setIconAndLabel(
                 R.drawable.ic_volume_ringer_vibrate,
                 R.string.volume_ringer_status_vibrate
+            )
+            Mode.PRIORITY -> dialog.setIconAndLabel(
+                com.android.internal.R.drawable.ic_qs_dnd,
+                R.string.alert_slider_mode_priority_text
             )
             Mode.SILENT -> dialog.setIconAndLabel(
                 R.drawable.ic_volume_ringer_mute,

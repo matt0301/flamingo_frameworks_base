@@ -19,8 +19,8 @@ package com.android.internal.os;
 public final class AlertSlider {
     public static enum Mode {
         NORMAL,
-        PRIORITY,
         VIBRATE,
+        PRIORITY,
         SILENT,
         DND
     }

@@ -107,7 +107,11 @@ class AlertSliderDialog @Inject constructor(
     }
 
     fun show(position: Position) {
-        prevPosition = currPosition
+        prevPosition = if (::currPosition.isInitialized) {
+            currPosition
+        } else {
+            position
+        }
         currPosition = position
         appearAnimator?.cancel()
         if (view.parent == null) {
@@ -173,7 +177,7 @@ class AlertSliderDialog @Inject constructor(
     }
 
     private fun getStepForPosition(position: Position): Int {
-        return (2 - position.ordinal) * stepSize
+        return position.ordinal * stepSize
     }
 
     private fun getOffsetForPosition() =
