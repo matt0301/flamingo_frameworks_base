@@ -17,6 +17,7 @@
 package com.android.server.policy
 
 import android.content.Context
+import android.os.DeadObjectException
 import android.os.RemoteException
 import android.util.Slog
 import android.view.KeyEvent
@@ -38,13 +39,12 @@ private const val BINDER_SERVICE_NAME = "device_key_manager"
 private val TAG = DeviceKeyManager::class.simpleName!!
 
 /**
- * Class that manages connection with a service component that implements
- * [IDeviceKeyHandler] for handling device specific [KeyEvent]'s.
- * [ComponentName] of the service must be set with config_deviceKeyHandler
- * and the scan codes [KeyEvent.getScanCode()] of the [KeyEvent]'s that
- * are supposed to be handled should be set with config_deviceKeyScanCodes.
- * The service component must also hold the BIND_DEVICE_KEY_HANDLER_SERVICE
- * permission in order for the system to bind with it.
+ * System service that provides an interface for device specific
+ * [KeyEvent]'s to be handled by device specific system application
+ * components. Binding with this class requires for the component to
+ * extend a Service and register key handler with [IDeviceKeyManager],
+ * providing the scan codes it is expecting to handle, and the event actions.
+ * Unregister when lifecycle of Service ends.
  */
 class DeviceKeyManager(context: Context) : SystemService(context) {
 
@@ -65,6 +65,10 @@ class DeviceKeyManager(context: Context) : SystemService(context) {
                 }
             }
         }
+
+        override fun unregisterKeyHandler(keyHandler: IKeyHandler) {
+            removeKeyHandlerInternal(keyHandler)
+        }
     }
 
     private val internalService = object : DeviceKeyManagerInternal {
@@ -83,6 +87,11 @@ class DeviceKeyManager(context: Context) : SystemService(context) {
                         try {
                             it.handleKeyEvent(keyEvent)
                         } catch(e: RemoteException) {
+                            if (e is DeadObjectException) {
+                                Slog.e(TAG, "Remote process for keyhandler doesn't exist anymore, removing")
+                                removeKeyHandlerInternal(it)
+                                return@forEach
+                            }
                             Slog.e(TAG, "Failed to notify key event", e)
                         }
                     }
@@ -104,6 +113,14 @@ class DeviceKeyManager(context: Context) : SystemService(context) {
         coroutineScope.launch {
             mutex.withLock {
                 keyHandlers.clear()
+            }
+        }
+    }
+
+    private fun removeKeyHandlerInternal(keyHandler: IKeyHandler) {
+        coroutineScope.launch {
+            mutex.withLock {
+                keyHandlers.removeIf { it.keyHandler == keyHandler }
             }
         }
     }

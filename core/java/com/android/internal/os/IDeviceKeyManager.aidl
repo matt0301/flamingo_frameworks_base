@@ -25,4 +25,5 @@ import com.android.internal.os.IKeyHandler;
  */
 oneway interface IDeviceKeyManager {
     void registerKeyHandler(in IKeyHandler keyHandler, in int[] scanCodes, in int[] actions);
+    void unregisterKeyHandler(in IKeyHandler keyHandler);
 }
