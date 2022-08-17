@@ -5297,30 +5297,6 @@ public final class Settings {
         public static final String DISPLAY_ANTI_FLICKER = "display_anti_flicker";
 
         /**
-         * Whether or not to vibrate when a touchscreen gesture is detected
-         * @hide
-         */
-        public static final String TOUCHSCREEN_GESTURE_HAPTIC_FEEDBACK = "touchscreen_gesture_haptic_feedback";
-
-        /**
-         * AlertSlider mode when alertslider is at the bottom.
-         * @hide
-         */
-        public static final String ALERTSLIDER_MODE_POSITION_BOTTOM = "alertslider_mode_position_bottom";
-
-        /**
-         * AlertSlider mode when alertslider is at the middle.
-         * @hide
-         */
-        public static final String ALERTSLIDER_MODE_POSITION_MIDDLE = "alertslider_mode_position_middle";
-
-        /**
-         * AlertSlider mode when alertslider is at the top.
-         * @hide
-         */
-        public static final String ALERTSLIDER_MODE_POSITION_TOP = "alertslider_mode_position_top";
-
-        /**
          * Whether to show the battery info on the lockscreen while charging
          * @hide
          */
