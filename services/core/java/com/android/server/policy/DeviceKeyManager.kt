@@ -109,14 +109,6 @@ class DeviceKeyManager(context: Context) : SystemService(context) {
         LocalServices.addService(DeviceKeyManagerInternal::class.java, internalService)
     }
 
-    override fun onUserSwitching(from: TargetUser?, to: TargetUser) {
-        coroutineScope.launch {
-            mutex.withLock {
-                keyHandlers.clear()
-            }
-        }
-    }
-
     private fun removeKeyHandlerInternal(keyHandler: IKeyHandler) {
         coroutineScope.launch {
             mutex.withLock {
