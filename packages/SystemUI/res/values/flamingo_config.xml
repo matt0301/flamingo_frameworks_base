@@ -27,9 +27,6 @@
     <!-- Udfps vendor code -->
     <integer name="config_udfps_vendor_code">0</integer>
 
-    <!-- Whether alertslider is on left side of the device -->
-    <bool name="config_alertSliderOnLeft">false</bool>
-
     <!-- StatusBar burn-in protection -->
     <bool name="config_statusBarBurnInProtection">false</bool>
     <integer name="config_shift_interval">60</integer>

@@ -16,10 +16,6 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <!-- AlertSlider -->
-    <string name="alert_slider_mode_priority_text">Priority</string>
-    <string name="alert_slider_mode_dnd_text">DND</string>
-
     <!-- Reader mode QS tile -->
     <string name="quick_settings_reading_mode">Reading mode</string>
     <string name="accessibility_quick_settings_reading_mode_on">Reading mode on.</string>

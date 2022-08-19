@@ -4842,33 +4842,6 @@ public class Intent implements Parcelable, Cloneable {
     public static final String ACTION_PACKAGE_NEEDS_INTEGRITY_VERIFICATION =
             "android.intent.action.PACKAGE_NEEDS_INTEGRITY_VERIFICATION";
 
-
-    /**
-     * Broadcast action for alertslider position change.
-     *
-     * @hide
-     */
-    public static final String ACTION_SLIDER_POSITION_CHANGED =
-            "android.intent.action.SLIDER_POSITION_CHANGED";
-
-    /**
-     * Extra data for the position of alertslider.
-     * Should be one of AlertSlider.Mode.
-     *
-     * @hide
-     */
-    public static final String EXTRA_SLIDER_POSITION =
-            "android.intent.extra.SLIDER_POSITION";
-
-    /**
-     * Extra data for the mode corresponding to the position of alertslider.
-     * Should be one of AlertSlider.Position.
-     *
-     * @hide
-     */
-    public static final String EXTRA_SLIDER_MODE =
-            "android.intent.extra.SLIDER_MODE";
-
     /**
      * Broadcast action: notify the system that the user has performed a gesture on the screen
      * to launch the camera. Broadcast should be protected to receivers holding the

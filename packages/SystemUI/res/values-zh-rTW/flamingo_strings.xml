@@ -16,10 +16,6 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <!-- AlertSlider -->
-    <string name="alert_slider_mode_priority_text">僅優先</string>
-    <string name="alert_slider_mode_dnd_text">勿擾</string>
-
     <!-- Reader mode QS tile -->
     <string name="quick_settings_reading_mode">閱讀模式</string>
     <string name="accessibility_quick_settings_reading_mode_on">閱讀模式開啟</string>
