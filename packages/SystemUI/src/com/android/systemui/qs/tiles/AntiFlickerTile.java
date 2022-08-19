@@ -52,7 +52,7 @@ public class AntiFlickerTile extends QSTileImpl<BooleanState> {
 
     private final Icon mIcon = ResourceIcon.get(R.drawable.ic_qs_anti_flicker);
 
-    private static final Intent DISPLAY_SETTINGS = new Intent("android.settings.DISPLAY_SETTINGS");
+    private static final Intent LIVEDISPLAY_SETTINGS = new Intent("com.android.settings.LIVEDISPLAY_SETTINGS");
 
     private final LiveDisplayManager mLiveDisplay;
 
@@ -119,7 +119,7 @@ public class AntiFlickerTile extends QSTileImpl<BooleanState> {
 
     @Override
     public Intent getLongClickIntent() {
-        return DISPLAY_SETTINGS;
+        return LIVEDISPLAY_SETTINGS;
     }
 
     @Override
